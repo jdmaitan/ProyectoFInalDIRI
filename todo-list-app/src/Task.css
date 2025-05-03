@@ -1,0 +1,47 @@
+.task-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .task-item:last-child {
+    border-bottom: none;
+  }
+  
+  .task-item input[type="checkbox"] {
+    margin-right: 0.5rem;
+  }
+  
+  .task-content {
+    flex-grow: 1;
+  }
+  
+  .task-title {
+    margin-bottom: 0.2rem;
+  }
+  
+  .task-title--completed {
+    text-decoration: line-through;
+  }
+  
+  .task-description {
+    font-size: 0.8rem;
+    color: #888;
+  }
+  
+  .task-actions {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 0.5rem;
+  }
+  
+  .task-actions svg { /* Estilos para los íconos SVG */
+    cursor: pointer;
+  }
+  
+  .task-actions svg:first-child { /* Estilo específico para el ícono de eliminar (si es necesario) */
+    margin-right: 0.5rem;
+  }
