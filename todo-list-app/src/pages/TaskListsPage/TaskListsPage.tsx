@@ -1,57 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { addTaskList, updateTaskList, deleteTaskList, } from '../../features/taskListsSlice';
 import TaskListsContainer from '../../components/TaskList/TaskListContainer/TaskListContainer';
 import TaskListModal from '../../components/TaskList/TaskListModal/TaskListModal';
 import { TaskList } from '../../interfaces/TaskLists';
+import { RootState } from '../../store';
+import { useNavigate } from 'react-router-dom';
+
 import './TaskListsPage.css';
 
-interface TaskListsPageProps
+const TaskListsPage: React.FC = () =>
 {
-    taskLists: TaskList[];
-    onSelectTaskList: (id: number) => void;
-    onSaveTaskList: (taskListData: { id?: number; title: string; description: string }) => void;
-    onDeleteTaskList: (id: number) => void;
-    onOpenEditTaskListModal: (id: number) => void;
-    onOpenAddTaskListModal: () => void;
-    taskListToEdit: TaskList | null;
-    isTaskListModalOpen: boolean;
-    closeTaskListModal: () => void;
-}
+    const taskLists = useSelector((state: RootState) => state.taskLists.lists);
+    const dispatch = useDispatch();
+    const [taskListToEdit, setTaskListToEdit] = useState<TaskList | null>(null);
+    const [isTaskListModalOpen, setIsTaskListModalOpen] = useState<boolean>(false);
+    const navigate = useNavigate();
 
-const TaskListsPage: React.FC<TaskListsPageProps> = ({
-    taskLists,
-    onOpenAddTaskListModal,
-    closeTaskListModal,
-    onSaveTaskList,
-    onOpenEditTaskListModal,
-    onDeleteTaskList,
-    onSelectTaskList,
-    taskListToEdit,
-    isTaskListModalOpen,
-}) =>
-{
     const handleOpenAddTaskListModal = () =>
     {
-        onOpenAddTaskListModal();
+        setTaskListToEdit(null);
+        setIsTaskListModalOpen(true);
     };
 
     const handleCloseTaskListModal = () =>
     {
-        closeTaskListModal();
+        setIsTaskListModalOpen(false);
+        setTaskListToEdit(null);
     };
 
     const handleSaveTaskList = (taskListData: { id?: number; title: string; description: string }) =>
     {
-        onSaveTaskList(taskListData);
+        if (taskListData.id)
+        {
+            dispatch(updateTaskList({ id: taskListData.id, title: taskListData.title, description: taskListData.description }));
+        }
+        else
+        {
+            dispatch(addTaskList({ title: taskListData.title, description: taskListData.description }));
+        }
+        setIsTaskListModalOpen(false);
+        setTaskListToEdit(null);
     };
 
     const handleOpenEditTaskListModal = (id: number) =>
     {
-        onOpenEditTaskListModal(id);
+        const taskList = taskLists.find(list => list.id === id);
+        setTaskListToEdit(taskList || null);
+        setIsTaskListModalOpen(true);
     };
 
     const handleDeleteTaskList = (id: number) =>
     {
-        onDeleteTaskList(id);
+        dispatch(deleteTaskList(id));
+    };
+
+    const handleSelectTaskList = (id: number) =>
+    {
+        navigate(`/tasks/${id}`);
     };
 
     return (
@@ -78,7 +84,7 @@ const TaskListsPage: React.FC<TaskListsPageProps> = ({
 
             <TaskListsContainer
                 taskLists={taskLists}
-                onSelect={onSelectTaskList}
+                onSelect={handleSelectTaskList}
                 onEdit={handleOpenEditTaskListModal}
                 onDelete={handleDeleteTaskList}
             />
