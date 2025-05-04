@@ -7,51 +7,51 @@ import './TaskListsPage.css';
 interface TaskListsPageProps
 {
     taskLists: TaskList[];
-    onSelectList: (id: number) => void;
+    onSelectTaskList: (id: number) => void;
     onSaveTaskList: (taskListData: { id?: number; title: string; description: string }) => void;
     onDeleteTaskList: (id: number) => void;
-    onEditTaskList: (id: number) => void;
-    onAddTaskList: () => void;
+    onOpenEditTaskListModal: (id: number) => void;
+    onOpenAddTaskListModal: () => void;
     taskListToEdit: TaskList | null;
-    isListModalOpen: boolean;
-    closeListModal: () => void;
+    isTaskListModalOpen: boolean;
+    closeTaskListModal: () => void;
 }
 
 const TaskListsPage: React.FC<TaskListsPageProps> = ({
     taskLists,
-    onSelectList,
+    onOpenAddTaskListModal,
+    closeTaskListModal,
     onSaveTaskList,
+    onOpenEditTaskListModal,
     onDeleteTaskList,
-    onEditTaskList,
-    onAddTaskList,
+    onSelectTaskList,
     taskListToEdit,
-    isListModalOpen,
-    closeListModal,
+    isTaskListModalOpen,
 }) =>
 {
-    const handleDelete = (id: number) =>
+    const handleOpenAddTaskListModal = () =>
     {
-        onDeleteTaskList(id);
+        onOpenAddTaskListModal();
     };
 
-    const handleSave = (taskListData: { id?: number; title: string; description: string }) =>
+    const handleCloseTaskListModal = () =>
+    {
+        closeTaskListModal();
+    };
+
+    const handleSaveTaskList = (taskListData: { id?: number; title: string; description: string }) =>
     {
         onSaveTaskList(taskListData);
     };
 
-    const handleOpenEdit = (id: number) =>
+    const handleOpenEditTaskListModal = (id: number) =>
     {
-        onEditTaskList(id);
+        onOpenEditTaskListModal(id);
     };
 
-    const handleClose = () =>
+    const handleDeleteTaskList = (id: number) =>
     {
-        closeListModal();
-    };
-
-    const handleAddListClick = () =>
-    {
-        onAddTaskList();
+        onDeleteTaskList(id);
     };
 
     return (
@@ -61,26 +61,26 @@ const TaskListsPage: React.FC<TaskListsPageProps> = ({
             <div className="task-list-header">
                 <button
                     className="add-task-list-button"
-                    onClick={handleAddListClick}
+                    onClick={handleOpenAddTaskListModal}
                 >
                     Añadir Nueva Lista
                 </button>
             </div>
 
-            {isListModalOpen && (
+            {isTaskListModalOpen && (
                 <TaskListModal
-                    isOpen={isListModalOpen}
-                    onClose={handleClose}
-                    onSave={handleSave}
+                    isOpen={isTaskListModalOpen}
+                    onClose={handleCloseTaskListModal}
+                    onSave={handleSaveTaskList}
                     initialTaskList={taskListToEdit}
                 />
             )}
 
             <TaskListsContainer
                 taskLists={taskLists}
-                onSelect={onSelectList}
-                onEdit={handleOpenEdit}
-                onDelete={handleDelete}
+                onSelect={onSelectTaskList}
+                onEdit={handleOpenEditTaskListModal}
+                onDelete={handleDeleteTaskList}
             />
         </div>
     );

@@ -27,13 +27,6 @@ function App()
   const [isTaskListModalOpen, setIsTaskListModalOpen] = useState<boolean>(false);
 
   ////Referentes a TaskList
-  //Create
-  const handleAddTaskList = () =>
-  {
-    setTaskListToEdit(null);
-    setIsTaskListModalOpen(true);
-  };
-
   //Create/Update
   const handleSaveTaskList = (taskListData: { id?: number; title: string; description: string }) =>
   {
@@ -77,6 +70,12 @@ function App()
   };
 
   //Modal
+  const openAddTaskListModal = () =>
+  {
+    setTaskListToEdit(null);
+    setIsTaskListModalOpen(true);
+  };
+
   const openEditTaskListModal = (id: number) =>
   {
     const taskList = taskLists.find(list => list.id === id);
@@ -118,7 +117,7 @@ function App()
   };
 
   //Update
-  const handleToggleTask = (taskId: number, listId: number) =>
+  const handleCompletedToggleTask = (taskId: number, listId: number) =>
   {
     setTaskLists(taskLists.map(list =>
       list.id === listId ? {
@@ -139,7 +138,7 @@ function App()
   };
 
   //Modal
-  const openEditTaskModal = (taskId?: number, listId: number = selectedTaskListId!) =>
+  const openTaskModal = (taskId?: number, listId: number = selectedTaskListId!) =>
   {
     const taskList = taskLists.find(list => list.id === listId);
     const task = taskId !== undefined ? taskList?.tasks.find(t => t.id === taskId) : null;
@@ -158,14 +157,14 @@ function App()
       {currentView === 'taskLists' && (
         <TaskListsPage
           taskLists={taskLists}
-          onSelectList={handleSelectTaskList}
+          onSelectTaskList={handleSelectTaskList}
+          onOpenAddTaskListModal={openAddTaskListModal}
+          onOpenEditTaskListModal={openEditTaskListModal}
+          closeTaskListModal={closeTaskListModal}
           onSaveTaskList={handleSaveTaskList}
-          onDeleteTaskList={handleDeleteTaskList}
-          onEditTaskList={openEditTaskListModal}
-          onAddTaskList={handleAddTaskList}
+          onDeleteTaskList={handleDeleteTaskList}         
+          isTaskListModalOpen={isTaskListModalOpen}
           taskListToEdit={taskListToEdit}
-          isListModalOpen={isTaskListModalOpen}
-          closeListModal={closeTaskListModal}
         />
       )}
 
@@ -173,13 +172,13 @@ function App()
         <TasksPage
           taskList={taskLists.find(list => list.id === selectedTaskListId)}
           onGoBack={handleGoBackToTaskLists}
+          openTaskModal={(taskId) => openTaskModal(taskId, selectedTaskListId)}
+          closeTaskModal={closeTaskModal}
           onSaveTask={(taskData) => handleSaveTask(taskData, selectedTaskListId)}
           onDeleteTask={(taskId) => handleDeleteTask(taskId, selectedTaskListId)}
-          onToggleTask={(taskId) => handleToggleTask(taskId, selectedTaskListId)}
-          openEditModal={(taskId) => openEditTaskModal(taskId, selectedTaskListId)}
+          onCompletedToggleTask={(taskId) => handleCompletedToggleTask(taskId, selectedTaskListId)}
+          isTaskModalOpen={isTaskModalOpen}
           taskToEdit={taskToEdit}
-          isModalOpen={isTaskModalOpen}
-          closeModal={closeTaskModal}
         />
       )}
     </div>

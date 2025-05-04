@@ -3,13 +3,13 @@ import './TaskModal.css';
 import { Task } from '../../../interfaces/Task';
 
 interface TaskModalProps {
-  isOpen: boolean;
+  isTaskModalOpen: boolean;
   onClose: () => void;
   onSave: (taskData: { id?: number; title: string; description: string }) => void;
   initialTask?: Task | null;
 }
 
-const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, onSave, initialTask }) => {
+const TaskModal: React.FC<TaskModalProps> = ({ isTaskModalOpen: isOpen, onClose, onSave, initialTask }) => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 

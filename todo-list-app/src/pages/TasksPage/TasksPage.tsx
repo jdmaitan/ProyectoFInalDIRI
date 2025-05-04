@@ -9,51 +9,55 @@ interface TasksPageProps
 {
   taskList: TaskList | undefined;
   onGoBack: () => void;
+  isTaskModalOpen: boolean;
+  openTaskModal: (id: number | undefined) => void;
+  closeTaskModal: () => void;
   onSaveTask: (taskData: { id?: number; title: string; description: string }) => void;
   onDeleteTask: (id: number) => void;
-  onToggleTask: (id: number) => void;
-  openEditModal: (id: number | undefined) => void;
+  onCompletedToggleTask: (id: number) => void;
   taskToEdit: Task | null;
-  isModalOpen: boolean;
-  closeModal: () => void;
 }
 
 const TasksPage: React.FC<TasksPageProps> = ({
   taskList,
   onGoBack,
+  isTaskModalOpen,
+  openTaskModal,
+  closeTaskModal,
   onSaveTask,
+  onCompletedToggleTask,
   onDeleteTask,
-  onToggleTask,
-  openEditModal,
-  taskToEdit,
-  isModalOpen,
-  closeModal,
+  taskToEdit
 }) =>
 {
-
-  const handleToggle = (id: number) =>
+  const handleOpenAddTaskModal = () =>
   {
-    onToggleTask(id);
+    openTaskModal(undefined);
+  }
+
+  const handleCloseTaskModal = () =>
+  {
+    closeTaskModal();
   };
 
-  const handleDelete = (id: number) =>
-  {
-    onDeleteTask(id);
-  };
-
-  const handleSave = (taskData: { id?: number; title: string; description: string }) =>
+  const handleSaveTask = (taskData: { id?: number; title: string; description: string }) =>
   {
     onSaveTask(taskData);
   };
 
-  const handleOpenEdit = (id: number) =>
+  const handleCompletedToggle = (id: number) =>
   {
-    openEditModal(id);
+    onCompletedToggleTask(id);
   };
 
-  const handleClose = () =>
+  const handleOpenEditTaskModal = (id: number) =>
   {
-    closeModal();
+    openTaskModal(id);
+  };
+
+  const handleDeleteTask = (id: number) =>
+  {
+    onDeleteTask(id);
   };
 
   return (
@@ -64,17 +68,17 @@ const TasksPage: React.FC<TasksPageProps> = ({
         <button className="back-button" onClick={onGoBack}>Volver a Listas</button>
         <button
           className="add-task-button"
-          onClick={() => { openEditModal(undefined); }}
+          onClick={handleOpenAddTaskModal}
         >
           Añadir Nueva Tarea
         </button>
       </div>
 
-      {isModalOpen && (
+      {isTaskModalOpen && (
         <TaskModal
-          isOpen={isModalOpen}
-          onClose={handleClose}
-          onSave={handleSave}
+          isTaskModalOpen={isTaskModalOpen}
+          onClose={handleCloseTaskModal}
+          onSave={handleSaveTask}
           initialTask={taskToEdit}
         />
       )}
@@ -82,9 +86,9 @@ const TasksPage: React.FC<TasksPageProps> = ({
       {taskList && (
         <TasksContainer
           tasks={taskList.tasks}
-          onToggle={handleToggle}
-          onEdit={handleOpenEdit}
-          onDelete={handleDelete}
+          onToggle={handleCompletedToggle}
+          onEdit={handleOpenEditTaskModal}
+          onDelete={handleDeleteTask}
         />
       )}
     </div>
