@@ -1,0 +1,51 @@
+.landing-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+   }
+  
+   .landing-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+   }
+  
+   .landing-description {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #666;
+   }
+  
+   .landing-auth-buttons {
+    display: flex;
+    gap: 1rem;
+   }
+  
+   .landing-login-button,
+   .landing-register-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+   }
+  
+   .landing-login-button {
+    background-color: #007bff;
+   }
+  
+   .landing-register-button {
+    background-color: #28a745;
+   }
+  
+   .landing-login-button:hover {
+    background-color: #0056b3;
+   }
+  
+   .landing-register-button:hover {
+    background-color: #1e7e34;
+   }
