@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './TaskModal.css';
-
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  completed: boolean;
-}
+import { Task } from '../../interfaces/Task';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -31,38 +25,41 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, onSave, initialT
 
   const handleSave = () => {
     if (title.trim() !== '') {
-      const taskData: { id?: number; title: string; description: string } = { title, description };
+      const taskData: { title: string; description: string; id?: number } = { 
+        title, 
+        description 
+      };
       if (initialTask) {
         taskData.id = initialTask.id;
       }
       onSave(taskData);
-      onClose();
     }
   };
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
-    <div className="task-modal-overlay">
-      <div className="task-modal">
-        <h2>{initialTask ? 'Editar Tarea' : 'Añadir Nueva Tarea'}</h2>
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>{initialTask ? 'Editar Tarea' : 'Nueva Tarea'}</h2>
+        
         <div className="modal-content">
-          <label htmlFor="title">Título:</label>
+          <label>Título:</label>
           <input
             type="text"
-            id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            placeholder="Título de la tarea"
           />
-          <label htmlFor="description">Descripción:</label>
+          
+          <label>Descripción:</label>
           <textarea
-            id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            placeholder="Descripción detallada"
           />
         </div>
+
         <div className="modal-actions">
           <button onClick={handleSave}>Guardar</button>
           <button onClick={onClose}>Cancelar</button>

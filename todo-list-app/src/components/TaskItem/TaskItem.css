@@ -38,10 +38,10 @@
     gap: 0.5rem;
   }
   
-  .task-actions svg { /* Estilos para los íconos SVG */
+  .task-actions svg {
     cursor: pointer;
   }
   
-  .task-actions svg:first-child { /* Estilo específico para el ícono de eliminar (si es necesario) */
+  .task-actions svg:first-child {
     margin-right: 0.5rem;
   }

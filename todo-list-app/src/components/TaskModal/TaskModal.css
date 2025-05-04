@@ -1,4 +1,4 @@
-.task-modal-overlay {
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +11,7 @@
     z-index: 1000; /* Asegura que esté por encima de otros elementos */
   }
   
-  .task-modal {
+  .modal {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
@@ -20,7 +20,7 @@
     max-width: 500px;
   }
   
-  .task-modal h2 {
+  .modal h2 {
     margin-top: 0;
     margin-bottom: 15px;
     text-align: center;
