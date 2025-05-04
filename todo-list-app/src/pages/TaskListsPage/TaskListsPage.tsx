@@ -1,89 +1,89 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TaskListsContainer from '../../components/TaskList/TaskListContainer/TaskListContainer';
 import TaskListModal from '../../components/TaskList/TaskListModal/TaskListModal';
 import { TaskList } from '../../interfaces/TaskLists';
 import './TaskListsPage.css';
 
-const TaskListsPage: React.FC = () => {
-  const [taskLists, setTaskLists] = useState<TaskList[]>([
-    { id: 1, title: 'Tareas del Hogar', description: 'Lista de tareas para la casa', tasks: [] },
-    { id: 2, title: 'Proyectos Personales', description: 'Ideas y tareas para mis proyectos', tasks: [] },
-  ]);
-  const [taskListToEdit, setTaskListToEdit] = useState<TaskList | null>(null);
-  const [isListModalOpen, setIsListModalOpen] = useState<boolean>(false);
+interface TaskListsPageProps
+{
+    taskLists: TaskList[];
+    onSelectList: (id: number) => void;
+    onSaveTaskList: (taskListData: { id?: number; title: string; description: string }) => void;
+    onDeleteTaskList: (id: number) => void;
+    onEditTaskList: (id: number) => void;
+    onAddTaskList: () => void;
+    taskListToEdit: TaskList | null;
+    isListModalOpen: boolean;
+    closeListModal: () => void;
+}
 
-  const handleDeleteTaskList = (id: number) => {
-    setTaskLists(taskLists.filter((list) => list.id !== id));
-  };
+const TaskListsPage: React.FC<TaskListsPageProps> = ({
+    taskLists,
+    onSelectList,
+    onSaveTaskList,
+    onDeleteTaskList,
+    onEditTaskList,
+    onAddTaskList,
+    taskListToEdit,
+    isListModalOpen,
+    closeListModal,
+}) =>
+{
+    const handleDelete = (id: number) =>
+    {
+        onDeleteTaskList(id);
+    };
 
-  const handleSaveTaskList = (taskListData: { id?: number; title: string; description: string }) => {
-    if (taskListData.id) {
-      // Editar lista existente
-      setTaskLists(taskLists.map(list =>
-        list.id === taskListData.id ? { ...list, title: taskListData.title, description: taskListData.description } : list
-      ));
-    } else {
-      // Agregar nueva lista
-      const newTaskList: TaskList = {
-        id: Math.max(0, ...taskLists.map(list => list.id)) + 1,
-        title: taskListData.title,
-        description: taskListData.description,
-        tasks: [],
-      };
-      setTaskLists([...taskLists, newTaskList]);
-    }
-    setIsListModalOpen(false);
-    setTaskListToEdit(null);
-  };
+    const handleSave = (taskListData: { id?: number; title: string; description: string }) =>
+    {
+        onSaveTaskList(taskListData);
+    };
 
-  const openEditListModal = (id: number) => {
-    const taskList = taskLists.find(list => list.id === id);
-    setTaskListToEdit(taskList || null);
-    setIsListModalOpen(true);
-  };
+    const handleOpenEdit = (id: number) =>
+    {
+        onEditTaskList(id);
+    };
 
-  const closeListModal = () => {
-    setIsListModalOpen(false);
-    setTaskListToEdit(null);
-  };
+    const handleClose = () =>
+    {
+        closeListModal();
+    };
 
-  // TODO: Implementar la lógica para seleccionar una lista y navegar a la vista de tareas
-  const handleSelectList = (id: number) => {
-    console.log(`Lista seleccionada con ID: ${id}`);
-    // Aquí deberíamos cambiar la vista para mostrar las tareas de la lista seleccionada
-  };
+    const handleAddListClick = () =>
+    {
+        onAddTaskList();
+    };
 
-  return (
-    <div className="task-list-page">
-      <h1>Mis Listas de Tareas</h1>
+    return (
+        <div className="task-list-page">
+            <h1>Mis Listas de Tareas</h1>
 
-      <div className="task-list-header">
-        <div></div> {/* Espacio vacío para alinear el botón a la derecha */}
-        <button
-          className="add-task-list-button"
-          onClick={() => { setTaskListToEdit(null); setIsListModalOpen(true); }}
-        >
-          Añadir Nueva Lista
-        </button>
-      </div>
+            <div className="task-list-header">
+                <button
+                    className="add-task-list-button"
+                    onClick={handleAddListClick}
+                >
+                    Añadir Nueva Lista
+                </button>
+            </div>
 
-      {isListModalOpen && (
-        <TaskListModal
-          isOpen={isListModalOpen}
-          onClose={closeListModal}
-          onSave={handleSaveTaskList}
-          initialTaskList={taskListToEdit}
-        />
-      )}
+            {isListModalOpen && (
+                <TaskListModal
+                    isOpen={isListModalOpen}
+                    onClose={handleClose}
+                    onSave={handleSave}
+                    initialTaskList={taskListToEdit}
+                />
+            )}
 
-      <TaskListsContainer
-        taskLists={taskLists}
-        onEdit={openEditListModal}
-        onDelete={handleDeleteTaskList}
-        onSelect={handleSelectList}
-      />
-    </div>
-  );
+            <TaskListsContainer
+                taskLists={taskLists}
+                onSelect={onSelectList}
+                onEdit={handleOpenEdit}
+                onDelete={handleDelete}
+            />
+        </div>
+    );
 };
 
 export default TaskListsPage;

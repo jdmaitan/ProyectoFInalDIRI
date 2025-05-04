@@ -1,76 +1,70 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TasksContainer from '../../components/Task/TasksContainer/TasksContainer';
 import TaskModal from '../../components/Task/TaskModal/TaskModal';
 import { Task } from '../../interfaces/Task';
-import './TasksPage.css'
+import { TaskList } from '../../interfaces/TaskLists';
+import './TasksPage.css';
 
-const TasksPage: React.FC = () =>
+interface TasksPageProps
 {
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, title: 'Aprender React', description: 'Repasar los conceptos básicos de React.', completed: false },
-    { id: 2, title: 'Construir la app de TODO', description: 'Implementar la funcionalidad principal de la app.', completed: false },
-    { id: 3, title: 'Añadir funcionalidades', description: 'Agregar características adicionales a la app.', completed: true },
-  ]);
-  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  taskList: TaskList | undefined;
+  onGoBack: () => void;
+  onSaveTask: (taskData: { id?: number; title: string; description: string }) => void;
+  onDeleteTask: (id: number) => void;
+  onToggleTask: (id: number) => void;
+  openEditModal: (id: number | undefined) => void;
+  taskToEdit: Task | null;
+  isModalOpen: boolean;
+  closeModal: () => void;
+}
 
-  const toggleTaskCompleted = (id: number) =>
+const TasksPage: React.FC<TasksPageProps> = ({
+  taskList,
+  onGoBack,
+  onSaveTask,
+  onDeleteTask,
+  onToggleTask,
+  openEditModal,
+  taskToEdit,
+  isModalOpen,
+  closeModal,
+}) =>
+{
+
+  const handleToggle = (id: number) =>
   {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+    onToggleTask(id);
   };
 
-  const deleteTask = (id: number) =>
+  const handleDelete = (id: number) =>
   {
-    setTasks(tasks.filter((task) => task.id !== id));
+    onDeleteTask(id);
   };
 
-  const handleSaveTask = (taskData: { id?: number; title: string; description: string }) =>
+  const handleSave = (taskData: { id?: number; title: string; description: string }) =>
   {
-    if (taskData.id)
-    {
-      setTasks(tasks.map(task =>
-        task.id === taskData.id ? { ...task, title: taskData.title, description: taskData.description } : task
-      ));
-    } else
-    {
-      const newTask: Task = {
-        id: Math.max(0, ...tasks.map(t => t.id)) + 1,
-        title: taskData.title,
-        description: taskData.description,
-        completed: false,
-      };
-      setTasks([...tasks, newTask]);
-    }
-    setIsModalOpen(false);
-    setTaskToEdit(null);
+    onSaveTask(taskData);
   };
 
-  const openEditModal = (id: number) =>
+  const handleOpenEdit = (id: number) =>
   {
-    const task = tasks.find(task => task.id === id);
-    setTaskToEdit(task || null);
-    setIsModalOpen(true);
+    openEditModal(id);
   };
 
-  const closeEditModal = () =>
+  const handleClose = () =>
   {
-    setIsModalOpen(false);
-    setTaskToEdit(null);
+    closeModal();
   };
 
   return (
     <div className="tasks-page">
-      <h1>Mi Lista de Tareas</h1>
+      <h1>{taskList?.title || 'Tareas'}</h1>
 
-      <div className="tasks-header">
-        <div></div> {/* Espacio vacío para alinear el botón a la derecha */}
+      <div className="tasks-controls">
+        <button className="back-button" onClick={onGoBack}>Volver a Listas</button>
         <button
           className="add-task-button"
-          onClick={() => { setTaskToEdit(null); setIsModalOpen(true); }}
+          onClick={() => { openEditModal(undefined); }}
         >
           Añadir Nueva Tarea
         </button>
@@ -79,18 +73,20 @@ const TasksPage: React.FC = () =>
       {isModalOpen && (
         <TaskModal
           isOpen={isModalOpen}
-          onClose={closeEditModal}
-          onSave={handleSaveTask}
+          onClose={handleClose}
+          onSave={handleSave}
           initialTask={taskToEdit}
         />
       )}
 
-      <TasksContainer
-        tasks={tasks}
-        onToggle={toggleTaskCompleted}
-        onDelete={deleteTask}
-        onEdit={openEditModal}
-      />
+      {taskList && (
+        <TasksContainer
+          tasks={taskList.tasks}
+          onToggle={handleToggle}
+          onEdit={handleOpenEdit}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 };
