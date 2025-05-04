@@ -1,15 +1,15 @@
-.task-page {
+.tasks-page {
   max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
 }
 
-.task-page h1 {
+.tasks-page h1 {
   text-align: center;
   margin-bottom: 2rem;
 }
 
-.task-header {
+.tasks-header {
   display: flex;
   justify-content: space-between;
   align-items: center;

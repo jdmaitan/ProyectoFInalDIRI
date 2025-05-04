@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaTrash, FaEdit } from 'react-icons/fa';
-import { Task } from '../../interfaces/Task';
+import { Task } from '../../../interfaces/Task';
 import './TaskItem.css';
 
 interface TaskItemProps {

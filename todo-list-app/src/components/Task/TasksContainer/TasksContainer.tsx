@@ -1,6 +1,6 @@
 import React from 'react';
 import TaskItem from '../TaskItem/TaskItem';
-import { Task } from '../../interfaces/Task';
+import { Task } from '../../../interfaces/Task';
 import './TasksContainer.css';
 
 interface TasksContainerProps {

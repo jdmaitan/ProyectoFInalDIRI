@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import TasksContainer from '../../components/TasksContainer/TasksContainer';
-import TaskModal from '../../components/TaskModal/TaskModal';
+import TasksContainer from '../../components/Task/TasksContainer/TasksContainer';
+import TaskModal from '../../components/Task/TaskModal/TaskModal';
 import { Task } from '../../interfaces/Task';
-import './TaskPage.css'
+import './TasksPage.css'
 
-const TaskPage: React.FC = () =>
+const TasksPage: React.FC = () =>
 {
   const [tasks, setTasks] = useState<Task[]>([
     { id: 1, title: 'Aprender React', description: 'Repasar los conceptos básicos de React.', completed: false },
@@ -63,10 +63,10 @@ const TaskPage: React.FC = () =>
   };
 
   return (
-    <div className="task-page">
+    <div className="tasks-page">
       <h1>Mi Lista de Tareas</h1>
 
-      <div className="task-header">
+      <div className="tasks-header">
         <div></div> {/* Espacio vacío para alinear el botón a la derecha */}
         <button
           className="add-task-button"
@@ -95,4 +95,4 @@ const TaskPage: React.FC = () =>
   );
 };
 
-export default TaskPage;
+export default TasksPage;

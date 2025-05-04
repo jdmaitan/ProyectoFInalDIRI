@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './TaskModal.css';
-import { Task } from '../../interfaces/Task';
+import { Task } from '../../../interfaces/Task';
 
 interface TaskModalProps {
   isOpen: boolean;
