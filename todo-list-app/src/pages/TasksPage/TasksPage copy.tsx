@@ -22,12 +22,12 @@ const TasksPage: React.FC = () =>
   const dispatch = useDispatch<AppDispatch>();
 
   // Obtener la lista específica y sus tareas
-  const taskList = useSelector((state: RootState) =>
-    state.taskLists.lists.find(list => list.id === taskListId!)
-  );
-  const { loading, error } = useSelector((state: RootState) => state.taskLists);
+  const taskLists = useSelector((state: RootState) => state.taskLists.lists);
 
-  const tasks = taskList?.tasks || [];
+  const { loading, error } = useSelector((state: RootState) => state.taskLists);
+  const taskList = taskLists.find(list => list.id === taskListId);
+
+  const tasks = Array.isArray(taskList?.tasks) ? taskList?.tasks || [] : [];
   const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 

@@ -5,7 +5,7 @@ import { Task } from '../../../interfaces/Task';
 interface TaskModalProps {
   isTaskModalOpen: boolean;
   onClose: () => void;
-  onSave: (taskData: { id?: number; title: string; description: string }) => void;
+  onSave: (taskData: { id?: string; title: string; description: string }) => void;
   initialTask?: Task | null;
 }
 
@@ -25,7 +25,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isTaskModalOpen: isOpen, onClose,
 
   const handleSave = () => {
     if (title.trim() !== '') {
-      const taskData: { title: string; description: string; id?: number } = { 
+      const taskData: { title: string; description: string; id?: string } = { 
         title, 
         description 
       };

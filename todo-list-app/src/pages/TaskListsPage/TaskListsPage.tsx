@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addTaskList, updateTaskList, deleteTaskList, } from '../../features/taskListsSlice';
+import { addTaskListAsync, updateTaskListAsync, deleteTaskListAsync, fetchTaskLists, } from '../../features/taskListsSlice';
 import TaskListsContainer from '../../components/TaskList/TaskListContainer/TaskListContainer';
 import TaskListModal from '../../components/TaskList/TaskListModal/TaskListModal';
 import { TaskList } from '../../interfaces/TaskLists';
-import { RootState } from '../../store';
+import { AppDispatch, RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
-
-import './TaskListsPage.css';
 import logger from '../../services/logging';
+import './TaskListsPage.css';
 
 const TaskListsPage: React.FC = () =>
 {
     const taskLists = useSelector((state: RootState) => state.taskLists.lists);
-    const dispatch = useDispatch();
+    const { loading, error } = useSelector((state: RootState) => state.taskLists);
+    const dispatch = useDispatch<AppDispatch>();
     const [taskListToEdit, setTaskListToEdit] = useState<TaskList | null>(null);
     const [isTaskListModalOpen, setIsTaskListModalOpen] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -30,41 +30,52 @@ const TaskListsPage: React.FC = () =>
         setTaskListToEdit(null);
     };
 
-    const handleSaveTaskList = (taskListData: { id?: number; title: string; description: string }) =>
+    const handleSaveTaskList = (taskListData: { id?: string; title: string; description: string }) =>
     {
         if (taskListData.id)
         {
-            dispatch(updateTaskList({ id: taskListData.id, title: taskListData.title, description: taskListData.description }));
+            dispatch(updateTaskListAsync({ id: taskListData.id, title: taskListData.title, description: taskListData.description }));
         }
         else
         {
-            dispatch(addTaskList({ title: taskListData.title, description: taskListData.description }));
+            dispatch(addTaskListAsync({ title: taskListData.title, description: taskListData.description }));
         }
         setIsTaskListModalOpen(false);
         setTaskListToEdit(null);
     };
 
-    const handleOpenEditTaskListModal = (id: number) =>
+    const handleOpenEditTaskListModal = (id: string) =>
     {
         const taskList = taskLists.find(list => list.id === id);
         setTaskListToEdit(taskList || null);
         setIsTaskListModalOpen(true);
     };
 
-    const handleDeleteTaskList = (id: number) =>
+    const handleDeleteTaskList = (id: string) =>
     {
-        dispatch(deleteTaskList(id));
+        dispatch(deleteTaskListAsync(id));
     };
 
-    const handleSelectTaskList = (id: number) =>
+    const handleSelectTaskList = (id: string) =>
     {
         navigate(`/taskLists/${id}`);
     };
 
     useEffect(() =>
     {
+        dispatch(fetchTaskLists()); // Despachamos fetchTaskLists al montar el componente
         logger.info("Entrando a TaskListsPage");
-    }, []);
+    }, [dispatch]);
+
+    if (loading === 'pending')
+    {
+        return <div>Cargando...</div>;
+    }
+
+    if (loading === 'failed')
+    {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <div className="task-list-page">
@@ -77,6 +88,7 @@ const TaskListsPage: React.FC = () =>
                 >
                     Añadir Nueva Lista
                 </button>
+                {error && <p className="error-message">Error: {error}</p>}
             </div>
 
             {isTaskListModalOpen && (

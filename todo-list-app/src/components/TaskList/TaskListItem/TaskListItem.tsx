@@ -5,9 +5,9 @@ import './TaskListItem.css';
 
 interface TaskListItemProps {
   taskList: TaskList;
-  onEdit: (id: number) => void;
-  onDelete: (id: number) => void;
-  onSelect: (id: number) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+  onSelect: (id: string) => void;
 }
 
 const TaskListItem: React.FC<TaskListItemProps> = ({ taskList, onEdit, onDelete, onSelect }) => {

@@ -5,7 +5,7 @@ import { TaskList } from '../../../interfaces/TaskLists';
 interface TaskListModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (taskListData: { id?: number; title: string; description: string }) => void;
+  onSave: (taskListData: { id?: string; title: string; description: string }) => void;
   initialTaskList?: TaskList | null;
 }
 
@@ -25,7 +25,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, onSave, 
 
   const handleSave = () => {
     if (title.trim() !== '') {
-      const taskListData: { title: string; description: string; id?: number } = {
+      const taskListData: { title: string; description: string; id?: string } = {
         title,
         description,
       };

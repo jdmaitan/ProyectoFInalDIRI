@@ -5,9 +5,9 @@ import './TasksContainer.css';
 
 interface TasksContainerProps {
   tasks: Task[];
-  onToggle: (id: number) => void;
-  onDelete: (id: number) => void;
-  onEdit: (id: number) => void;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
 }
 
 const TasksContainer: React.FC<TasksContainerProps> = ({ tasks, onToggle, onDelete, onEdit }) => {
