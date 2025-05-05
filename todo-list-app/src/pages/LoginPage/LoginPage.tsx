@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './LoginPage.css';
+import logger from '../../services/logging';
 
 const LoginPage: React.FC = () =>
 {
@@ -12,6 +13,11 @@ const LoginPage: React.FC = () =>
         // Aquí iría la lógica de inicio de sesión con Firebase
         console.log('Iniciar sesión', email, password);
     };
+
+    useEffect(() =>
+    {
+        logger.info("Entrando a LoginPage");
+    }, []);
 
     return (
         <div className="auth-container">

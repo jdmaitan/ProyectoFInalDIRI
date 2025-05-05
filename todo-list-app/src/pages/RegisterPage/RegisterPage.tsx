@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './RegisterPage.css';
+import logger from '../../services/logging';
 
 const RegisterPage: React.FC = () =>
 {
@@ -13,6 +14,11 @@ const RegisterPage: React.FC = () =>
         // Aquí iría la lógica de registro con Firebase
         console.log('Registrarse', name, email, password);
     };
+
+    useEffect(() =>
+    {
+        logger.info("Entrando a RegisterPage");
+    }, []);
 
     return (
         <div className="auth-container">

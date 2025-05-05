@@ -14,7 +14,7 @@ function App() {
     <Route path="/login" element={<LoginPage />} />
     <Route path="/register" element={<RegisterPage />} />
     <Route path="/taskLists" element={<TaskListsPage />} />
-    <Route path="/tasks/:taskListId" element={<TasksPage />} />
+    <Route path="/taskLists/:taskListId" element={<TasksPage />} />
    </Routes>
   </>
  );

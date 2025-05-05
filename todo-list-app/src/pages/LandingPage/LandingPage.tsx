@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './LandingPage.css';
+import logger from '../../services/logging';
 
 const LandingPage: React.FC = () =>
 {
+    useEffect(() =>
+    {
+        logger.info("Entrando a LandingPage");
+    }, []);
+
     return (
         <div className="landing-page">
             <h1 className="landing-title">Mis Listas de Tareas</h1>

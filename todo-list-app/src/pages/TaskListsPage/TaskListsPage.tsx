@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addTaskList, updateTaskList, deleteTaskList, } from '../../features/taskListsSlice';
 import TaskListsContainer from '../../components/TaskList/TaskListContainer/TaskListContainer';
@@ -8,6 +8,7 @@ import { RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
 
 import './TaskListsPage.css';
+import logger from '../../services/logging';
 
 const TaskListsPage: React.FC = () =>
 {
@@ -57,8 +58,13 @@ const TaskListsPage: React.FC = () =>
 
     const handleSelectTaskList = (id: number) =>
     {
-        navigate(`/tasks/${id}`);
+        navigate(`/taskLists/${id}`);
     };
+
+    useEffect(() =>
+    {
+        logger.info("Entrando a TaskListsPage");
+    }, []);
 
     return (
         <div className="task-list-page">
