@@ -5,7 +5,7 @@ import './TasksContainer.css';
 
 interface TasksContainerProps {
   tasks: Task[];
-  onToggle: (id: string) => void;
+  onToggle: (id: string, completed: boolean) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
 }

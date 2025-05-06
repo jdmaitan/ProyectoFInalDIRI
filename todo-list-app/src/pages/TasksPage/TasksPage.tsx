@@ -3,9 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import
 {
   addTaskAsync,
-  updateTask,
-  deleteTask,
-  toggleTaskCompletion
+  updateTaskAsync,
+  deleteTaskAsync,
+  toggleTaskCompletionAsync
 } from '../../features/taskListsSlice';
 import { AppDispatch, RootState } from '../../store';
 import TasksContainer from '../../components/Task/TasksContainer/TasksContainer';
@@ -48,7 +48,7 @@ const TasksPage: React.FC = () =>
     if (taskData.id)
     {
       dispatch(
-        updateTask({
+        updateTaskAsync({
           listId: taskListId!,
           taskId: taskData.id,
           title: taskData.title,
@@ -69,12 +69,13 @@ const TasksPage: React.FC = () =>
     setTaskToEdit(null);
   };
 
-  const handleCompletedToggle = (id: string) =>
+  const handleCompletedToggle = (id: string, completed: boolean) =>
   {
     dispatch(
-      toggleTaskCompletion({
+      toggleTaskCompletionAsync({
         listId: taskListId!,
         taskId: id,
+        completed: !completed
       })
     );
   };
@@ -89,7 +90,7 @@ const TasksPage: React.FC = () =>
   const handleDeleteTask = (id: string) =>
   {
     dispatch(
-      deleteTask({
+      deleteTaskAsync({
         listId: taskListId!,
         taskId: id,
       })

@@ -1,7 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TaskList } from '../interfaces/TaskLists';
 import { Task } from '../interfaces/Task';
-import { addTaskListToFirebase, addTaskToFirebase, deleteTaskListFromFirebase, getTaskListsFromFirebase, updateTaskListInFirebase } from '../services/firebaseService';
+import { addTaskListToFirebase, addTaskToFirebase, deleteTaskFromFirebase, deleteTaskListFromFirebase, getTaskListsFromFirebase, updateTaskCompletionInFirebase, updateTaskInFirebase, updateTaskListInFirebase } from '../services/firebaseService';
 
 interface TaskListsState
 {
@@ -22,8 +22,8 @@ export const fetchTaskLists = createAsyncThunk(
   {
     try
     {
-      const taskLists = await getTaskListsFromFirebase(); // Llamamos a la función para obtener las listas desde Firebase
-      return taskLists; // Retornamos las listas obtenidas
+      const taskLists = await getTaskListsFromFirebase();
+      return taskLists;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any)
     {
@@ -54,8 +54,8 @@ export const updateTaskListAsync = createAsyncThunk(
     try
     {
       const { id, title, description } = payload;
-      await updateTaskListInFirebase(id, title, description); // Usamos la función del servicio
-      return payload; // Retornamos el payload para actualizar el estado local
+      await updateTaskListInFirebase(id, title, description);
+      return payload;
     } catch (error)
     {
       console.error("Error updating task list:", error);
@@ -70,8 +70,8 @@ export const deleteTaskListAsync = createAsyncThunk(
   {
     try
     {
-      await deleteTaskListFromFirebase(id); // Usamos la función del servicio
-      return id; // Retornamos el ID para actualizar el estado local
+      await deleteTaskListFromFirebase(id);
+      return id;
     } catch (error)
     {
       console.error('Error deleting task list:', error);
@@ -80,7 +80,6 @@ export const deleteTaskListAsync = createAsyncThunk(
   }
 );
 
-// Thunk para añadir una nueva tarea
 export const addTaskAsync = createAsyncThunk(
   'taskLists/addTask',
   async (payload: { listId: string; title: string; description: string }) =>
@@ -99,73 +98,61 @@ export const addTaskAsync = createAsyncThunk(
   },
 );
 
+export const updateTaskAsync = createAsyncThunk(
+  'taskLists/updateTask',
+  async (payload: { listId: string; taskId: string; title: string; description: string }) =>
+  {
+    try
+    {
+      const { listId, taskId, title, description } = payload;
+      await updateTaskInFirebase(listId, taskId, title, description);
+      return payload;
+    } catch (error)
+    {
+      console.error('Error updating task:', error);
+      throw error;
+    }
+  },
+);
+
+export const deleteTaskAsync = createAsyncThunk(
+  'taskLists/deleteTask',
+  async (payload: { listId: string; taskId: string }) =>
+  {
+    try
+    {
+      const { listId, taskId } = payload;
+      await deleteTaskFromFirebase(listId, taskId);
+      return payload;
+    } catch (error)
+    {
+      console.error('Error deleting task:', error);
+      throw error;
+    }
+  },
+);
+
+export const toggleTaskCompletionAsync = createAsyncThunk(
+  'taskLists/toggleTaskCompletion',
+  async (payload: { listId: string; taskId: string; completed: boolean }) =>
+  {
+    try
+    {
+      const { listId, taskId, completed } = payload;
+      await updateTaskCompletionInFirebase(listId, taskId, completed);
+      return payload;
+    } catch (error)
+    {
+      console.error('Error toggling task completion:', error);
+      throw error;
+    }
+  },
+);
+
 export const taskListsSlice = createSlice({
   name: 'taskLists',
   initialState,
-  reducers: {
-    deleteTaskList: (state, action: PayloadAction<string>) =>
-    {
-      state.lists = state.lists.filter(list => list.id !== action.payload);
-    },
-
-    // Operaciones con Tareas
-    // addTask: (state, action: PayloadAction<{ listId: string; title: string; description: string }>) =>
-    // {
-    //   const { listId, title, description } = action.payload;
-    //   const list = state.lists.find(list => list.id === listId);
-    //   if (list)
-    //   {
-    //     const newTask: Task = {
-    //       id: '',
-    //       title,
-    //       description,
-    //       completed: false,
-    //     };
-    //     list.tasks.push(newTask);
-    //   }
-    // },
-
-    updateTask: (state, action: PayloadAction<{ listId: string; taskId: string; title: string; description: string }>) =>
-    {
-      const { listId, taskId, title, description } = action.payload;
-      const list = state.lists.find(list => list.id === listId);
-      if (list)
-      {
-        const task = list.tasks.find(task => task.id === taskId);
-        if (task)
-        {
-          task.title = title;
-          task.description = description;
-        }
-      }
-    },
-
-    deleteTask: (state, action: PayloadAction<{ listId: string; taskId: string }>) =>
-    {
-      const { listId, taskId } = action.payload;
-      const list = state.lists.find(list => list.id === listId);
-      if (list)
-      {
-        list.tasks = list.tasks.filter(task => task.id !== taskId);
-      }
-    },
-
-    toggleTaskCompletion: (state, action: PayloadAction<{ listId: string; taskId: string }>) =>
-    {
-      const { listId, taskId } = action.payload;
-      const list = state.lists.find(list => list.id === listId);
-      if (list)
-      {
-        const task = list.tasks.find(task => task.id === taskId);
-        if (task)
-        {
-          task.completed = !task.completed;
-        }
-      }
-    },
-
-
-  },
+  reducers: {},
   extraReducers: (builder) =>
   {
     builder
@@ -177,7 +164,7 @@ export const taskListsSlice = createSlice({
       .addCase(addTaskListAsync.fulfilled, (state, action) =>
       {
         state.loading = 'succeeded';
-        state.lists.push(action.payload); // Añadimos la nueva lista al estado
+        state.lists.push(action.payload);
       })
       .addCase(addTaskListAsync.rejected, (state, action) =>
       {
@@ -185,17 +172,17 @@ export const taskListsSlice = createSlice({
         state.error = action.error.message || 'Error al añadir la lista';
       })
       .addCase(fetchTaskLists.pending, (state) =>
-      {  // Manejamos el estado 'pending' para fetchTaskLists
+      {
         state.loading = 'pending';
         state.error = null;
       })
       .addCase(fetchTaskLists.fulfilled, (state, action) =>
-      { // Manejamos el estado 'fulfilled'
+      {
         state.loading = 'succeeded';
-        state.lists = action.payload; // Asignamos las listas obtenidas al estado
+        state.lists = action.payload;
       })
       .addCase(fetchTaskLists.rejected, (state, action) =>
-      {  // Manejamos el estado 'rejected'
+      {
         state.loading = 'failed';
         state.error = action.error.message || 'Error al obtener las listas';
       })
@@ -238,23 +225,16 @@ export const taskListsSlice = createSlice({
       })
       .addCase(addTaskAsync.fulfilled, (state, action) =>
       {
-        // const { id, title, description, completed, listId } = action.payload;
-        // const list = state.lists.find(list => list.id === listId);
-        // if (list)
-        // {
-        //   const newTask: Task = { id, title, description, completed };
-        //   list.tasks.push(newTask);
-        // }
-        // state.loading = 'succeeded';
         const { id, title, description, completed, listId } = action.payload;
         const list = state.lists.find(list => list.id === listId);
-        if (list) {
-            // Verifica que tasks sea un array
-            if (!Array.isArray(list.tasks)) {
-                list.tasks = [];
-            }
-            const newTask: Task = { id, title, description, completed };
-            list.tasks.push(newTask);
+        if (list)
+        {
+          if (!Array.isArray(list.tasks))
+          {
+            list.tasks = [];
+          }
+          const newTask: Task = { id, title, description, completed };
+          list.tasks.push(newTask);
         }
         state.loading = 'succeeded';
       })
@@ -267,14 +247,78 @@ export const taskListsSlice = createSlice({
       {
         state.loading = 'pending';
         state.error = null;
+      })
+      .addCase(updateTaskAsync.fulfilled, (state, action) =>
+      {
+        const { listId, taskId, title, description } = action.payload;
+        const list = state.lists.find(list => list.id === listId);
+        if (list)
+        {
+          const task = list.tasks.find(task => task.id === taskId);
+          if (task)
+          {
+            task.title = title;
+            task.description = description;
+          }
+        }
+        state.loading = 'succeeded';
+      })
+      .addCase(updateTaskAsync.rejected, (state, action) =>
+      {
+        state.loading = 'failed';
+        state.error = action.error.message || 'Error al actualizar la tarea';
+      })
+      .addCase(updateTaskAsync.pending, (state) =>
+      {
+        state.loading = 'pending';
+        state.error = null;
+      })
+      .addCase(deleteTaskAsync.fulfilled, (state, action) =>
+      {
+        const { listId, taskId } = action.payload;
+        const list = state.lists.find(list => list.id === listId);
+        if (list)
+        {
+          list.tasks = list.tasks.filter(task => task.id !== taskId);
+        }
+        state.loading = 'succeeded';
+      })
+      .addCase(deleteTaskAsync.rejected, (state, action) =>
+      {
+        state.loading = 'failed';
+        state.error = action.error.message || 'Error al eliminar la tarea';
+      })
+      .addCase(deleteTaskAsync.pending, (state) =>
+      {
+        state.loading = 'pending';
+        state.error = null;
+      })
+      .addCase(toggleTaskCompletionAsync.fulfilled, (state, action) =>
+      {
+        const { listId, taskId, completed } = action.payload;
+        const list = state.lists.find(list => list.id === listId);
+        if (list)
+        {
+          const task = list.tasks.find(task => task.id === taskId);
+          if (task)
+          {
+            task.completed = completed;
+          }
+        }
+        state.loading = 'succeeded';
+
+      })
+      .addCase(toggleTaskCompletionAsync.rejected, (state, action) =>
+      {
+        state.loading = 'failed';
+        state.error = action.error.message || 'Error al cambiar el estado de la tarea';
+      })
+      .addCase(toggleTaskCompletionAsync.pending, (state) =>
+      {
+        state.loading = 'pending';
+        state.error = null;
       });
   },
 });
-
-export const {
-  updateTask,
-  deleteTask,
-  toggleTaskCompletion
-} = taskListsSlice.actions;
 
 export default taskListsSlice.reducer;

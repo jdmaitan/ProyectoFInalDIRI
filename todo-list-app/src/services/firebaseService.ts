@@ -10,41 +10,16 @@ type NewTaskListData = {
     tasks: Task[];
 };
 
-// export const getTaskListsFromFirebase = async (): Promise<TaskList[]> =>
-// {
-//     try
-//     {
-//         const snapshot: DataSnapshot = await get(taskListsRef);
-//         const data = snapshot.val();
-
-//         const taskLists: TaskList[] = data
-//             ? Object.entries(data).map(([id, value]) => ({
-//                 id: id,
-//                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//                 title: (value as any).title || '',
-//                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//                 description: (value as any).description || '',
-//                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//                 tasks: (value as any).tasks || [],
-//             }))
-//             : [];
-
-//         return taskLists;
-//     } catch (error)
-//     {
-//         console.error("Error getting task lists from Firebase:", error);
-//         throw error;
-//     }
-// };
-
-// En firebaseService.ts
-export const getTaskListsFromFirebase = async (): Promise<TaskList[]> => {
-    try {
+export const getTaskListsFromFirebase = async (): Promise<TaskList[]> =>
+{
+    try
+    {
         const snapshot: DataSnapshot = await get(taskListsRef);
         const data = snapshot.val();
 
         const taskLists: TaskList[] = data
-            ? Object.entries(data).map(([id, value]) => {
+            ? Object.entries(data).map(([id, value]) =>
+            {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const tasksData = (value as any).tasks || {};
                 // Convertir el objeto de tareas a array
@@ -68,7 +43,8 @@ export const getTaskListsFromFirebase = async (): Promise<TaskList[]> => {
             : [];
 
         return taskLists;
-    } catch (error) {
+    } catch (error)
+    {
         console.error("Error getting task lists from Firebase:", error);
         throw error;
     }
@@ -129,48 +105,19 @@ export const deleteTaskListFromFirebase = (id: string): Promise<void> =>
     });
 };
 
-// export const addTaskToFirebase = async (
-//     listId: string,
-//     title: string,
-//     description: string,
-//     completed: boolean,
-// ): Promise<string> =>
-// {
-//     try
-//     {
-//         const tasksRef = ref(database, `taskLists/${listId}/tasks`); // Referencia al nodo 'tasks' de la lista
-//         const newTaskRef = push(tasksRef); // Creamos una nueva entrada y obtenemos su clave única
-//         if (!newTaskRef.key)
-//         {
-//             throw new Error('No se pudo generar un ID único para la tarea.');
-//         }
-
-//         const newTask: Task = {
-//             id: newTaskRef.key,
-//             title,
-//             description,
-//             completed,
-//         };
-
-//         await set(newTaskRef, newTask); // Guardamos la tarea en la base de datos
-//         return newTask.id; // Devolvemos el ID generado
-//     } catch (error)
-//     {
-//         console.error('Error adding task to Firebase:', error);
-//         throw error;
-//     }
-// };
-
 export const addTaskToFirebase = async (
     listId: string,
     title: string,
     description: string,
     completed: boolean,
-): Promise<string> => {
-    try {
+): Promise<string> =>
+{
+    try
+    {
         const tasksRef = ref(database, `taskLists/${listId}/tasks`);
         const newTaskRef = push(tasksRef);
-        if (!newTaskRef.key) {
+        if (!newTaskRef.key)
+        {
             throw new Error('No se pudo generar un ID único para la tarea.');
         }
 
@@ -183,8 +130,60 @@ export const addTaskToFirebase = async (
 
         await set(newTaskRef, newTask);
         return newTask.id;
-    } catch (error) {
+    } catch (error)
+    {
         console.error('Error adding task to Firebase:', error);
+        throw error;
+    }
+};
+
+export const updateTaskInFirebase = async (
+    listId: string,
+    taskId: string,
+    title: string,
+    description: string,
+): Promise<void> =>
+{
+    try
+    {
+        const taskRef = ref(database, `taskLists/${listId}/tasks/${taskId}`);
+        await update(taskRef, { title, description });
+    } catch (error)
+    {
+        console.error('Error updating task in Firebase:', error);
+        throw error;
+    }
+};
+
+export const deleteTaskFromFirebase = async (
+    listId: string,
+    taskId: string,
+): Promise<void> =>
+{
+    try
+    {
+        const taskRef = ref(database, `taskLists/${listId}/tasks/${taskId}`);
+        await remove(taskRef);
+    } catch (error)
+    {
+        console.error('Error deleting task from Firebase:', error);
+        throw error;
+    }
+};
+
+export const updateTaskCompletionInFirebase = async (
+    listId: string,
+    taskId: string,
+    completed: boolean,
+): Promise<void> =>
+{
+    try
+    {
+        const taskRef = ref(database, `taskLists/${listId}/tasks/${taskId}`);
+        await update(taskRef, { completed });
+    } catch (error)
+    {
+        console.error('Error updating task completion in Firebase:', error);
         throw error;
     }
 };

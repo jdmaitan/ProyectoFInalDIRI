@@ -3,20 +3,22 @@ import { FaTrash, FaEdit } from 'react-icons/fa';
 import { Task } from '../../../interfaces/Task';
 import './TaskItem.css';
 
-interface TaskItemProps {
+interface TaskItemProps
+{
   task: Task;
-  onToggle: (id: string) => void;
+  onToggle: (id: string, completed: boolean) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onDelete, onEdit }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onDelete, onEdit }) =>
+{
   return (
     <li className="task-item">
       <input
         type="checkbox"
         checked={task.completed}
-        onChange={() => onToggle(task.id)}
+        onChange={() => onToggle(task.id, task.completed)}
       />
       <div className="task-content">
         <h3 className={`task-title ${task.completed ? 'task-title--completed' : ''}`}>
