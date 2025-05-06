@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './LandingPage.css';
 import logger from '../../services/logging';
+import { AuthContext } from '../../contexts/authContext';
 
 const LandingPage: React.FC = () =>
 {
+    const { user } = useContext(AuthContext); // Obtiene usuario y roles del contexto.
+
     useEffect(() =>
     {
         logger.info("Entrando a LandingPage");
@@ -17,14 +20,17 @@ const LandingPage: React.FC = () =>
                 Bienvenido a tu organizador personal de tareas. ¡Comienza a gestionar tu
                 productividad!
             </p>
-            <div className="landing-auth-buttons">
-                <Link to="/login" className="landing-login-button">
-                    Iniciar Sesión
-                </Link>
-                <Link to="/register" className="landing-register-button">
-                    Registrarse
-                </Link>
-            </div>
+            {!user &&
+                <div className="landing-auth-buttons">
+                    <Link to="/login" className="landing-login-button">
+                        Iniciar Sesión
+                    </Link>
+                    <Link to="/register" className="landing-register-button">
+                        Registrarse
+                    </Link>
+                </div>
+            }
+
         </div>
     );
 };

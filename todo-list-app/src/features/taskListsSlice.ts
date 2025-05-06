@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TaskList } from '../interfaces/TaskLists';
 import { Task } from '../interfaces/Task';
-import { addTaskListToFirebase, addTaskToFirebase, deleteTaskFromFirebase, deleteTaskListFromFirebase, getTaskListsFromFirebase, updateTaskCompletionInFirebase, updateTaskInFirebase, updateTaskListInFirebase } from '../services/firebaseService';
+import { addTaskListToFirebase, addTaskToFirebase, deleteTaskFromFirebase, deleteTaskListFromFirebase, getTaskListsFromFirebase, updateTaskCompletionInFirebase, updateTaskInFirebase, updateTaskListInFirebase } from '../services/firebaseDatabaseTaskService';
 
 interface TaskListsState
 {
@@ -89,7 +89,7 @@ export const addTaskAsync = createAsyncThunk(
       const { listId, title, description } = payload;
       const taskId = await addTaskToFirebase(listId, title, description, false);
       const newTask: Task = { id: taskId, title, description, completed: false };
-      return { ...newTask, listId }; // Devolvemos la tarea con el listId
+      return { ...newTask, listId };
     } catch (error)
     {
       console.error('Error adding task:', error);

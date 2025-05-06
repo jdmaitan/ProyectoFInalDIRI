@@ -3,7 +3,6 @@ import { DataSnapshot, get, push, ref, remove, set, update } from 'firebase/data
 import { Task } from '../interfaces/Task';
 import { TaskList } from '../interfaces/TaskLists';
 
-// Define un tipo para los datos de la lista sin el ID
 type NewTaskListData = {
     title: string;
     description: string;

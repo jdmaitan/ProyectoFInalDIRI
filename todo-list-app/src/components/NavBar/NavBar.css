@@ -1,0 +1,78 @@
+/* Navbar.css */
+.navbar {
+    font-family: sans-serif;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    display: flex;
+    align-items: center; /* Vertically center items */
+    justify-content: center; /* Center the nav content horizontally */
+  }
+  
+  .nav-content {
+    display: flex;
+    align-items: center; /* Vertically center items */
+    width: 100%;
+    max-width: 960px; /* Optional: set a max width */
+    margin: 0 auto; /* Center the nav content horizontally */
+    justify-content: space-between; /* Space between menu and button */
+  }
+  
+  .nav-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Center the menu items horizontally */
+    align-items: center; /* Vertically center menu items */
+  }
+  
+  .nav-menu li {
+    margin-left: 20px;
+  }
+  
+  .nav-menu a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .nav-menu a:hover {
+    background-color: #555;
+  }
+  
+  .nav-menu button {
+    background-color: #f00;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    height: fit-content; /* Ensure button doesn't stretch vertically */
+  }
+  
+  .nav-menu button:hover {
+    background-color: #d00;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .nav-content {
+        flex-direction: column; /* Stack vertically */
+        align-items: center; /* Center horizontally */
+    }
+  
+    .nav-menu {
+        flex-direction: column; /* Stack vertically */
+        text-align: center; /* Center text */
+        margin-bottom: 10px; /* Space between menu and button */
+    }
+  
+    .nav-menu li {
+        margin: 10px 0;
+        margin-left: 0;
+    }
+  }

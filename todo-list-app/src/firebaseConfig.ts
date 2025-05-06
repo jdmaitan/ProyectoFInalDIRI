@@ -1,4 +1,5 @@
-import { initializeApp } from "firebase/app";
+import { getApps, initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { getDatabase, ref } from "firebase/database";
 
 const firebaseConfig = {
@@ -11,6 +12,7 @@ const firebaseConfig = {
   appId: "1:694601947742:web:8d36f38b9d8608e12ef2cf"
 };
 
-const app = initializeApp(firebaseConfig);
+export const app = !getApps().length ? initializeApp(firebaseConfig) : getApps() [0];
 export const database = getDatabase(app);
-export const taskListsRef = ref(database, 'taskLists'); // Define una referencia a la colección 'taskLists'
+export const auth = getAuth(app);
+export const taskListsRef = ref(database, 'taskLists');

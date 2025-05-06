@@ -1,17 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import logger from '../../services/logging';
+import { authService } from '../../services/authService';
 
 const LoginPage: React.FC = () =>
 {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState<string>(""); // Estado para mensajes de error.
+    const navigate = useNavigate(); // Hook para la navegación.
 
-    const handleLogin = () =>
+    const handleLogin = async () =>
     {
-        // Aquí iría la lógica de inicio de sesión con Firebase
         console.log('Iniciar sesión', email, password);
+        setError(""); // Limpia mensajes de error anteriores.
+
+        try
+        {
+            const userCredential = await authService.signIn(email, password); // Inicia sesión.
+            console.log("Usuario autenticado:", userCredential.user); // Muestra mensaje en consola.
+            navigate('/taskLists');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any)
+        {
+            console.error("Error al iniciar sesión:", error); // Muestra mensaje de error en la consola.
+            setError(error.message); // Establece el mensaje de error.
+        }
     };
 
     useEffect(() =>
@@ -46,6 +61,7 @@ const LoginPage: React.FC = () =>
                 <button type="submit" className="auth-button">
                     Iniciar Sesión
                 </button>
+                {error && <p className="error-message">{error}</p>} {/* Mensaje de error (condicional). */}
             </form>
             <p className="auth-alt-text">
                 ¿No tienes una cuenta? <Link to="/register">Regístrate</Link>
