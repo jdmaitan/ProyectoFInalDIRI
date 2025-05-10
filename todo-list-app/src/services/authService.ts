@@ -1,3 +1,3 @@
-import { FirebaseAuthService } from "./FirebaseAuthService";
+import { FirebaseAuthService } from "./firebaseAuthService";
 
 export const authService = new FirebaseAuthService();

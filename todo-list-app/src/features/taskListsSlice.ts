@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TaskList } from '../interfaces/TaskLists';
 import { Task } from '../interfaces/Task';
 import { addTaskListToFirebase, addTaskToFirebase, deleteTaskFromFirebase, deleteTaskListFromFirebase, getTaskListsFromFirebase, updateTaskCompletionInFirebase, updateTaskInFirebase, updateTaskListInFirebase } from '../services/firebaseDatabaseTaskService';
+import logger from '../services/logging';
 
 interface TaskListsState
 {
@@ -18,7 +19,7 @@ const initialState: TaskListsState = {
 
 export const fetchTaskLists = createAsyncThunk(
   'taskLists/fetchTaskLists',
-  async () =>
+  async (_, { rejectWithValue }) =>
   {
     try
     {
@@ -27,62 +28,73 @@ export const fetchTaskLists = createAsyncThunk(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any)
     {
-      throw new Error(error.message || 'Error al obtener las listas de tareas');
+      logger.error(`Error fetching task lists:${error.message}`);
+      return rejectWithValue(error.message || 'Error al obtener las listas de tareas');
     }
   }
 );
 
 export const addTaskListAsync = createAsyncThunk(
   'taskLists/addTaskList',
-  async (payload: { title: string; description: string }) =>
+  async (payload: { title: string; description: string }, { rejectWithValue }) =>
   {
-    const firebaseId = await addTaskListToFirebase(payload.title, payload.description);
-    const newTaskList: TaskList = {
-      id: firebaseId,
-      title: payload.title,
-      description: payload.description,
-      tasks: [],
-    };
-    return newTaskList;
+    try
+    {
+      const firebaseId = await addTaskListToFirebase(payload.title, payload.description);
+      const newTaskList: TaskList = {
+        id: firebaseId,
+        title: payload.title,
+        description: payload.description,
+        tasks: [],
+      };
+      return newTaskList;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
+    {
+      logger.error(`Error adding task list: ${error.message}`);
+      return rejectWithValue(error.message || 'Error al añadir la lista de tareas');
+    }
   }
 );
 
 export const updateTaskListAsync = createAsyncThunk(
   'taskLists/updateTaskList',
-  async (payload: { id: string; title: string; description: string }) =>
+  async (payload: { id: string; title: string; description: string }, { rejectWithValue }) =>
   {
     try
     {
       const { id, title, description } = payload;
       await updateTaskListInFirebase(id, title, description);
       return payload;
-    } catch (error)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-      console.error("Error updating task list:", error);
-      throw error;
+      logger.error(`Error updating task list: ${error.message}`);
+      return rejectWithValue(error.message || 'Error al actualizar la lista de tareas');
     }
   }
 );
 
 export const deleteTaskListAsync = createAsyncThunk(
   'taskLists/deleteTaskList',
-  async (id: string) =>
+  async (id: string, { rejectWithValue }) =>
   {
     try
     {
       await deleteTaskListFromFirebase(id);
       return id;
-    } catch (error)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-      console.error('Error deleting task list:', error);
-      throw error;
+      logger.error(`Error deleting task list: ${error.message}`);
+      return rejectWithValue(error.message || 'Error al eliminar la lista de tareas');
     }
   }
 );
 
 export const addTaskAsync = createAsyncThunk(
   'taskLists/addTask',
-  async (payload: { listId: string; title: string; description: string }) =>
+  async (payload: { listId: string; title: string; description: string }, { rejectWithValue }) =>
   {
     try
     {
@@ -90,61 +102,65 @@ export const addTaskAsync = createAsyncThunk(
       const taskId = await addTaskToFirebase(listId, title, description, false);
       const newTask: Task = { id: taskId, title, description, completed: false };
       return { ...newTask, listId };
-    } catch (error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-      console.error('Error adding task:', error);
-      throw error;
+      logger.error(`Error adding task: ${error.message}`);
+      return rejectWithValue(error.message || 'Error al añadir la tarea');
     }
   },
 );
 
 export const updateTaskAsync = createAsyncThunk(
   'taskLists/updateTask',
-  async (payload: { listId: string; taskId: string; title: string; description: string }) =>
+  async (payload: { listId: string; taskId: string; title: string; description: string }, { rejectWithValue }) =>
   {
     try
     {
       const { listId, taskId, title, description } = payload;
       await updateTaskInFirebase(listId, taskId, title, description);
       return payload;
-    } catch (error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-      console.error('Error updating task:', error);
-      throw error;
+      logger.error(`Error updating task: ${error.message}`);
+      return rejectWithValue(error.message || 'Error al actualizar la tarea');
     }
   },
 );
 
 export const deleteTaskAsync = createAsyncThunk(
   'taskLists/deleteTask',
-  async (payload: { listId: string; taskId: string }) =>
+  async (payload: { listId: string; taskId: string }, { rejectWithValue }) =>
   {
     try
     {
       const { listId, taskId } = payload;
       await deleteTaskFromFirebase(listId, taskId);
       return payload;
-    } catch (error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-      console.error('Error deleting task:', error);
-      throw error;
+      logger.error(`Error deleting task: ${error.message}`);
+      return rejectWithValue(error.message || 'Error al eliminar la tarea');
     }
   },
 );
 
 export const toggleTaskCompletionAsync = createAsyncThunk(
   'taskLists/toggleTaskCompletion',
-  async (payload: { listId: string; taskId: string; completed: boolean }) =>
+  async (payload: { listId: string; taskId: string; completed: boolean }, { rejectWithValue }) =>
   {
     try
     {
       const { listId, taskId, completed } = payload;
       await updateTaskCompletionInFirebase(listId, taskId, completed);
       return payload;
-    } catch (error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-      console.error('Error toggling task completion:', error);
-      throw error;
+      logger.error(`Error toggling task completion: ${error.message}`);
+      return rejectWithValue(error.message || 'Error al cambiar el estado de la tarea');
     }
   },
 );

@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import { authService } from '../services/authService';
 import { Role } from '../services/interfaces/IAuthService';
+import logger from '../services/logging';
 
 // Interfaz para las propiedades del contexto: usuario y roles.
 interface AuthContextProps
@@ -44,7 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) =>
                     setRoles(userRoles); // Establece los roles.
                 } catch (error)
                 {
-                    console.error('Error al obtener los roles:', error);
+                    logger.error(`Error al obtener los roles: ${error}`);
                     setRoles(null); // Maneja el error.
                 }
             } else

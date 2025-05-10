@@ -1,3 +1,3 @@
-import { FirebaseUserService } from "./firebaseDatabaseUserService";
+import { FirebaseDatabaseUserService } from "./firebaseDatabaseUserService";
 
-export const userService = new FirebaseUserService();
+export const userService = new FirebaseDatabaseUserService();

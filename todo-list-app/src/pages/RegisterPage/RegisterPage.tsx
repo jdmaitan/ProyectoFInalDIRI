@@ -3,37 +3,37 @@ import { Link, useNavigate } from 'react-router-dom';
 import './RegisterPage.css';
 import logger from '../../services/logging';
 import { authService } from '../../services/authService';
-import { userService } from '../../services/UserService';
+import { userService } from '../../services/userService';
 
 const RegisterPage: React.FC = () =>
 {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState<string>(""); // Estado para mensajes de error.
-    const [success, setSuccess] = useState<string>(""); // Estado para mensajes de éxito.
-    const navigate = useNavigate(); // Hook para la navegación.
+    const [error, setError] = useState<string>("");
+    const [success, setSuccess] = useState<string>("");
+    const navigate = useNavigate();
 
     const handleRegister = async () =>
     {
-        setError(""); // Limpia mensajes de error anteriores.
+        setError("");
 
         try
         {
-            const userCredential = await authService.signUp(email, password); // Registra al usuario.
-            console.log("Usuario registrado:", userCredential.user); // Muestra mensaje en consola.
+            const userCredential = await authService.signUp(email, password);
+            logger.info(`Usuario registrado: ${userCredential.user}`);
             await userService.setUserRoles(userCredential.user.uid, { // Asigna roles al usuario.
                 email: userCredential.user.email,
                 roles: { admin: false }
             });
-            setSuccess('Registro exitoso. Redirigiendo a las listas...'); // Mensaje de éxito.
+            setSuccess('Registro exitoso. Redirigiendo a las listas...');
             setTimeout(() =>
             {
                 navigate('/taskLists'); // Redirige al menú tras un breve tiempo.
             }, 2000);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any)
         {
-            console.error("Error al registrarse:", error); // Muestra mensaje de error en la consola.
+            logger.error(`Error al registrarse: ${error.message}`);
             setError(error.message); // Establece el mensaje de error.
         }
     };

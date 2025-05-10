@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import
-{
-  addTaskAsync,
-  updateTaskAsync,
-  deleteTaskAsync,
-  toggleTaskCompletionAsync
-} from '../../features/taskListsSlice';
+import { addTaskAsync, updateTaskAsync, deleteTaskAsync, toggleTaskCompletionAsync } from '../../features/taskListsSlice';
 import { AppDispatch, RootState } from '../../store';
 import TasksContainer from '../../components/Task/TasksContainer/TasksContainer';
-import TaskModal from '../../components/Task/TaskModal/TaskModal';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Task } from '../../interfaces/Task';
 import './TasksPage.css';
 import logger from '../../services/logging';
+
+const TaskModal = lazy(() => import('../../components/Task/TaskModal/TaskModal'));
 
 const TasksPage: React.FC = () =>
 {
@@ -114,7 +109,7 @@ const TasksPage: React.FC = () =>
 
   if (loading === 'failed')
   {
-    return <div>Error: {error}</div>;
+    return <div>Error: {error || 'Ocurrió un error al realizar la operación.'}</div>;
   }
 
   return (
@@ -134,12 +129,14 @@ const TasksPage: React.FC = () =>
       </div>
 
       {isTaskModalOpen && (
-        <TaskModal
-          isTaskModalOpen={isTaskModalOpen}
-          onClose={handleCloseTaskModal}
-          onSave={handleSaveTask}
-          initialTask={taskToEdit}
-        />
+        <Suspense fallback={<div>Cargando modal...</div>}>
+          <TaskModal
+            isTaskModalOpen={isTaskModalOpen}
+            onClose={handleCloseTaskModal}
+            onSave={handleSaveTask}
+            initialTask={taskToEdit}
+          />
+        </Suspense>
       )}
 
       <TasksContainer

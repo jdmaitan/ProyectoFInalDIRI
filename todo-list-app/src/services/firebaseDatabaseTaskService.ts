@@ -2,6 +2,7 @@ import { database, taskListsRef } from '../firebaseConfig';
 import { DataSnapshot, get, push, ref, remove, set, update } from 'firebase/database';
 import { Task } from '../interfaces/Task';
 import { TaskList } from '../interfaces/TaskLists';
+import logger from './logging';
 
 type NewTaskListData = {
     title: string;
@@ -21,7 +22,6 @@ export const getTaskListsFromFirebase = async (): Promise<TaskList[]> =>
             {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const tasksData = (value as any).tasks || {};
-                // Convertir el objeto de tareas a array
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const tasksArray = tasksData ? Object.entries(tasksData).map(([taskId, task]: [string, any]) => ({
                     id: taskId,
@@ -42,10 +42,11 @@ export const getTaskListsFromFirebase = async (): Promise<TaskList[]> =>
             : [];
 
         return taskLists;
-    } catch (error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-        console.error("Error getting task lists from Firebase:", error);
-        throw error;
+        logger.error("Error getting task lists from Firebase");
+        throw new Error("Failed to fetch task lists: " + error.message);
     }
 };
 
@@ -56,7 +57,6 @@ export const addTaskListToFirebase = (title: string, description: string): Promi
         const newListRef = push(taskListsRef);
         if (newListRef.key)
         {
-            // Si newListRef.key existe, significa que se generó el ID
             const newListData: NewTaskListData = {
                 title: title,
                 description: description,
@@ -69,7 +69,8 @@ export const addTaskListToFirebase = (title: string, description: string): Promi
                 })
                 .catch((error) =>
                 {
-                    reject(error);
+                    logger.error("Error adding task list to Firebase");
+                    reject(new Error("Failed to add task list: " + error.message));
                 });
         } else
         {
@@ -89,7 +90,11 @@ export const updateTaskListInFirebase = (
         const taskListRef = ref(database, `taskLists/${id}`);
         update(taskListRef, { title, description })
             .then(() => resolve())
-            .catch(reject);
+            .catch((error) =>
+            {
+                logger.error(`Error updating task list with ID ${id} in Firebase`,);
+                reject(new Error(`Failed to update task list with ID ${id}: ` + error.message));
+            });
     });
 };
 
@@ -100,7 +105,11 @@ export const deleteTaskListFromFirebase = (id: string): Promise<void> =>
         const taskListRef = ref(database, `taskLists/${id}`);
         remove(taskListRef)
             .then(() => resolve())
-            .catch(reject);
+            .catch((error) =>
+            {
+                logger.error(`Error deleting task list with ID ${id} from Firebase`);
+                reject(new Error(`Failed to delete task list with ID ${id}: ` + error.message));
+            });
     });
 };
 
@@ -129,10 +138,11 @@ export const addTaskToFirebase = async (
 
         await set(newTaskRef, newTask);
         return newTask.id;
-    } catch (error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-        console.error('Error adding task to Firebase:', error);
-        throw error;
+        logger.error('Error adding task to Firebase:');
+        throw new Error('Failed to add task: ' + error.message);
     }
 };
 
@@ -147,10 +157,11 @@ export const updateTaskInFirebase = async (
     {
         const taskRef = ref(database, `taskLists/${listId}/tasks/${taskId}`);
         await update(taskRef, { title, description });
-    } catch (error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-        console.error('Error updating task in Firebase:', error);
-        throw error;
+        logger.error(`Error updating task with ID ${taskId} in list ${listId} in Firebase`);
+        throw new Error(`Failed to update task with ID ${taskId}: ` + error.message);
     }
 };
 
@@ -163,10 +174,11 @@ export const deleteTaskFromFirebase = async (
     {
         const taskRef = ref(database, `taskLists/${listId}/tasks/${taskId}`);
         await remove(taskRef);
-    } catch (error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-        console.error('Error deleting task from Firebase:', error);
-        throw error;
+        logger.error(`Error deleting task with ID ${taskId} from list ${listId} in Firebase`);
+        throw new Error(`Failed to delete task with ID ${taskId}: ` + error.message);
     }
 };
 
@@ -180,9 +192,10 @@ export const updateTaskCompletionInFirebase = async (
     {
         const taskRef = ref(database, `taskLists/${listId}/tasks/${taskId}`);
         await update(taskRef, { completed });
-    } catch (error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any)
     {
-        console.error('Error updating task completion in Firebase:', error);
-        throw error;
+        logger.error(`Error updating completion status for task with ID ${taskId} in list ${listId} in Firebase`);
+        throw new Error(`Failed to update task completion status for task with ID ${taskId}: ` + error.message);
     }
 };

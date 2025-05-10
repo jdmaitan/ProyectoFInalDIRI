@@ -2,74 +2,109 @@ import { IUserService } from "./interfaces/IUserService";
 import { getDatabase, ref, get, update, set } from "firebase/database";
 import { app } from "../firebaseConfig";
 import { Role } from "./interfaces/IAuthService";
+import logger from "./logging";
 
-export class FirebaseUserService implements IUserService
+export class FirebaseDatabaseUserService implements IUserService
 {
     private db;
 
     constructor()
     {
-        this.db = getDatabase(app); // Obtiene la instancia de la base de datos de Firebase.
+        this.db = getDatabase(app);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async getAllUsers(): Promise<{ [uid: string]: any }>
     {
-        const usersRef = ref(this.db, "users"); // Crea una referencia al nodo 'users' en la base de datos.
-        const snapshot = await get(usersRef); // Obtiene los datos del nodo 'users'.
-
-        if (snapshot.exists())
+        try
         {
-            return snapshot.val(); // Retorna un objeto con todos los usuarios almacenados.
+            const usersRef = ref(this.db, "users");
+            const snapshot = await get(usersRef);
+
+            if (snapshot.exists())
+            {
+                return snapshot.val();
+            }
+
+            return {};
         }
-        return {}; // Retorna un objeto vacío si no existen usuarios.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        catch (error: any)
+        {
+            logger.error("Error getting all users:");
+            throw new Error("Failed to fetch all users: " + error.message);
+        }
     }
 
     async updateUserAdminRole(uid: string, isAdmin: boolean): Promise<void>
     {
-        const userRolesRef = ref(this.db, `users/${uid}/roles`); // Crea referencia al nodo 'roles' del usuario específico.
-        await update(userRolesRef, { admin: isAdmin }); // Actualiza el rol 'admin' del usuario.
+        try
+        {
+            const userRolesRef = ref(this.db, `users/${uid}/roles`);
+            await update(userRolesRef, { admin: isAdmin });
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        catch (error: any) 
+        {
+            logger.error("Error updating user admin role");
+            throw new Error("Failed to update user admin role: " + error.message);
+        }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async setUserRoles(uid: string, data: any): Promise<void>
     {
-        const userRef = ref(this.db, `users/${uid}`); // Crea referencia al nodo del usuario específico.
-        const snapshot = await get(userRef); // Obtiene los datos del usuario.
+        try
+        {
+            const userRef = ref(this.db, `users/${uid}`);
+            const snapshot = await get(userRef);
 
-        if (!snapshot.exists())
+            if (!snapshot.exists())
+            {
+                await set(userRef, data);
+            } else
+            {
+                await update(userRef, data);
+            }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any)
         {
-            await set(userRef, data); // Si el usuario no existe, lo crea con los datos proporcionados.
-        } else
-        {
-            await update(userRef, data); // Si el usuario existe, actualiza sus datos.
+            logger.error("Error setting user roles");
+            throw new Error("Failed to set user roles: " + error.message);
         }
     }
 
     async getUserRoles(uid: string): Promise<Role[]>
     {
-        const rolesRef = ref(this.db, `users/${uid}/roles`); // Crea una referencia al nodo de roles del usuario.
-        const snapshot = await get(rolesRef); // Obtiene los datos del nodo de roles.
+        try
+        {
+            const rolesRef = ref(this.db, `users/${uid}/roles`);
+            const snapshot = await get(rolesRef);
 
-        if (snapshot.exists())
-        { // Verifica si existen datos en el snapshot.
-            const rolesData = snapshot.val(); // Obtiene los datos de roles como un objeto.
-            const roles: Role[] = []; // Inicializa un array para los roles.
+            if (snapshot.exists())
+            {
+                const rolesData = snapshot.val();
+                const roles: Role[] = [];
 
-            if (rolesData.admin === true)
-            { // Verifica si el rol 'admin' es verdadero.
-                roles.push(Role.ADMIN); // Agrega el rol ADMIN al array.
+                if (rolesData.admin === true)
+                {
+                    roles.push(Role.ADMIN);
+                }
+
+                if (roles.length === 0)
+                {
+                    roles.push(Role.USER);
+                }
+
+                return roles;
             }
 
-            if (roles.length === 0)
-            { // Si no se encontró ningún rol específico.
-                roles.push(Role.USER); // Asigna el rol USER por defecto.
-            }
-
-            return roles; // Retorna el array de roles.
+            return [Role.USER];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any)
+        {
+            logger.error("Error getting user roles");
+            throw new Error("Failed to get user roles: " + error.message);
         }
-
-        return [Role.USER]; // Retorna el rol USER por defecto si no existen datos.
     }
-
 }

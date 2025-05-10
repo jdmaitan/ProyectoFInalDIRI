@@ -4,6 +4,7 @@ import { AuthContext } from '../../contexts/authContext';
 import { authService } from '../../services/authService';
 import './navbar.css';
 import { Role } from '../../services/interfaces/IAuthService';
+import logger from '../../services/logging';
 
 const Navbar: React.FC = () =>
 {
@@ -16,9 +17,10 @@ const Navbar: React.FC = () =>
         {
             await authService.signOut(); // Llama al servicio de autenticación para cerrar sesión.
             navigate('/'); // Redirige al usuario a la página principal.
-        } catch (error)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any)
         {
-            console.error("Error al cerrar sesión:", error); // Maneja errores de cierre de sesión.
+            logger.error(`Error al cerrar sesión: ${error.message}`); // Maneja errores de cierre de sesión.
         }
     };
 

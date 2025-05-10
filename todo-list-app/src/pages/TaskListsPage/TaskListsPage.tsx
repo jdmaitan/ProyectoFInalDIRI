@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addTaskListAsync, updateTaskListAsync, deleteTaskListAsync, fetchTaskLists, } from '../../features/taskListsSlice';
 import TaskListsContainer from '../../components/TaskList/TaskListContainer/TaskListContainer';
-import TaskListModal from '../../components/TaskList/TaskListModal/TaskListModal';
 import { TaskList } from '../../interfaces/TaskLists';
 import { AppDispatch, RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import logger from '../../services/logging';
 import './TaskListsPage.css';
+
+const TaskListModal = lazy(() => import('../../components/TaskList/TaskListModal/TaskListModal'));
 
 const TaskListsPage: React.FC = () =>
 {
@@ -74,7 +75,7 @@ const TaskListsPage: React.FC = () =>
 
     if (loading === 'failed')
     {
-        return <div>Error: {error}</div>;
+        return <div>Error: {error || 'Hubo un error durante la ejecución de la operación'}</div>;
     }
 
     return (
@@ -92,12 +93,14 @@ const TaskListsPage: React.FC = () =>
             </div>
 
             {isTaskListModalOpen && (
-                <TaskListModal
-                    isOpen={isTaskListModalOpen}
-                    onClose={handleCloseTaskListModal}
-                    onSave={handleSaveTaskList}
-                    initialTaskList={taskListToEdit}
-                />
+                <Suspense fallback={<div>Cargando modal...</div>}> {/* Envolvemos el modal con Suspense */}
+                    <TaskListModal
+                        isOpen={isTaskListModalOpen}
+                        onClose={handleCloseTaskListModal}
+                        onSave={handleSaveTaskList}
+                        initialTaskList={taskListToEdit}
+                    />
+                </Suspense>
             )}
 
             <TaskListsContainer

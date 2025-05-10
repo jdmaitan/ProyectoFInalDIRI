@@ -13,18 +13,17 @@ const LoginPage: React.FC = () =>
 
     const handleLogin = async () =>
     {
-        console.log('Iniciar sesión', email, password);
         setError(""); // Limpia mensajes de error anteriores.
 
         try
         {
             const userCredential = await authService.signIn(email, password); // Inicia sesión.
-            console.log("Usuario autenticado:", userCredential.user); // Muestra mensaje en consola.
+            logger.info(`Usuario autenticado: ${userCredential.user}`); // Muestra mensaje en consola.
             navigate('/taskLists');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any)
         {
-            console.error("Error al iniciar sesión:", error); // Muestra mensaje de error en la consola.
+            logger.error(`Error al iniciar sesión: ${error.message}`); // Muestra mensaje de error en la consola.
             setError(error.message); // Establece el mensaje de error.
         }
     };
