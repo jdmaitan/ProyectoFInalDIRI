@@ -6,7 +6,7 @@ import './index.css'
 import { Provider } from 'react-redux'
 import { store } from './store/index.ts'
 import { AuthProvider } from './contexts/auth/AuthProvider.tsx'
-import { LanguageProvider } from './contexts/language/languageProvider.tsx'
+import { LanguageProvider } from './contexts/language/LanguageProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
