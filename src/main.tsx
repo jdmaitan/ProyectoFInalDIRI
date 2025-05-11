@@ -8,11 +8,13 @@ import { store } from './store/index.ts'
 import { AuthProvider } from './contexts/auth/AuthProvider.tsx'
 import { LanguageProvider } from './contexts/language/LanguageProvider.tsx'
 
+const basename = import.meta.env.BASE_URL;
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <LanguageProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <BrowserRouter basename={basename}>
           <Provider store={store}>
             <App />
           </Provider>
