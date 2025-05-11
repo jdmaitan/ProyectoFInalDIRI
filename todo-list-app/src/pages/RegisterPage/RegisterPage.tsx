@@ -4,6 +4,7 @@ import './RegisterPage.css';
 import logger from '../../services/logging';
 import { authService } from '../../services/authService';
 import { userService } from '../../services/userService';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const RegisterPage: React.FC = () =>
 {
@@ -12,6 +13,7 @@ const RegisterPage: React.FC = () =>
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState<string>("");
     const navigate = useNavigate();
+    const intl = useIntl();
 
     const handleRegister = async () =>
     {
@@ -21,20 +23,23 @@ const RegisterPage: React.FC = () =>
         {
             const userCredential = await authService.signUp(email, password);
             logger.info(`Usuario registrado: ${userCredential.user}`);
-            await userService.setUserRoles(userCredential.user.uid, { // Asigna roles al usuario.
+            await userService.setUserRoles(userCredential.user.uid, {
                 email: userCredential.user.email,
                 roles: { admin: false }
             });
-            setSuccess('Registro exitoso. Redirigiendo a las listas...');
-            setTimeout(() =>
+            setSuccess(
+                intl.formatMessage({
+                    id: "register.successMessage",
+                    defaultMessage: "Registro exitoso. Redirigiendo a las listas..."
+                })
+            ); setTimeout(() =>
             {
-                navigate('/taskLists'); // Redirige al menú tras un breve tiempo.
+                navigate('/taskLists');
             }, 2000);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any)
         {
             logger.error(`Error al registrarse: ${error.message}`);
-            setError(error.message); // Establece el mensaje de error.
+            setError(error.message);
         }
     };
 
@@ -45,10 +50,14 @@ const RegisterPage: React.FC = () =>
 
     return (
         <div className="auth-container">
-            <h2 className="auth-title">Crear Cuenta</h2>
+            <h2 className="auth-title">
+                <FormattedMessage id="register.title" defaultMessage="Crear Cuenta" />
+            </h2>
             <form className="auth-form" onSubmit={(e) => { e.preventDefault(); handleRegister(); }}>
                 <div className="auth-form-group">
-                    <label htmlFor="email">Correo Electrónico</label>
+                    <label htmlFor="email">
+                        <FormattedMessage id="register.emailLabel" defaultMessage="Correo Electrónico" />
+                    </label>
                     <input
                         type="email"
                         id="email"
@@ -58,7 +67,9 @@ const RegisterPage: React.FC = () =>
                     />
                 </div>
                 <div className="auth-form-group">
-                    <label htmlFor="password">Contraseña</label>
+                    <label htmlFor="password">
+                        <FormattedMessage id="register.passwordLabel" defaultMessage="Contraseña" />
+                    </label>
                     <input
                         type="password"
                         id="password"
@@ -68,13 +79,16 @@ const RegisterPage: React.FC = () =>
                     />
                 </div>
                 <button type="submit" className="auth-button">
-                    Registrarse
+                    <FormattedMessage id="register.submitButton" defaultMessage="Registrarse" />
                 </button>
-                {error && <p className="error-message">{error}</p>} {/* Mensaje de error (condicional). */}
-                {success && <p className="success-message">{success}</p>} {/* Mensaje de éxito (condicional). */}
+                {error && <p className="error-message">{error}</p>}
+                {success && <p className="success-message">{success}</p>}
             </form>
             <p className="auth-alt-text">
-                ¿Ya tienes una cuenta? <Link to="/login">Inicia sesión</Link>
+                <FormattedMessage id="register.alreadyAccount" defaultMessage="¿Ya tienes una cuenta? " />
+                <Link to="/login">
+                    <FormattedMessage id="register.loginLink" defaultMessage="Inicia sesión" />
+                </Link>
             </p>
         </div>
     );

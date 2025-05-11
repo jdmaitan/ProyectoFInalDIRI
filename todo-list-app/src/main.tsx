@@ -5,16 +5,19 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import { Provider } from 'react-redux'
 import { store } from './store/index.ts'
-import { AuthProvider } from './contexts/authContext.tsx'
+import { AuthProvider } from './contexts/auth/AuthProvider.tsx'
+import { LanguageProvider } from './contexts/language/languageProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <BrowserRouter>
-        <Provider store={store}>
-          <App />
-        </Provider>
-      </BrowserRouter>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Provider store={store}>
+            <App />
+          </Provider>
+        </BrowserRouter>
+      </AuthProvider>
+    </LanguageProvider>
   </StrictMode>
 )

@@ -3,28 +3,28 @@ import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import logger from '../../services/logging';
 import { authService } from '../../services/authService';
+import { FormattedMessage } from 'react-intl';
 
 const LoginPage: React.FC = () =>
 {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState<string>(""); // Estado para mensajes de error.
-    const navigate = useNavigate(); // Hook para la navegación.
+    const [error, setError] = useState<string>("");
+    const navigate = useNavigate();
 
     const handleLogin = async () =>
     {
-        setError(""); // Limpia mensajes de error anteriores.
+        setError("");
 
         try
         {
-            const userCredential = await authService.signIn(email, password); // Inicia sesión.
-            logger.info(`Usuario autenticado: ${userCredential.user}`); // Muestra mensaje en consola.
+            const userCredential = await authService.signIn(email, password);
+            logger.info(`Usuario autenticado: ${userCredential.user}`);
             navigate('/taskLists');
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any)
         {
-            logger.error(`Error al iniciar sesión: ${error.message}`); // Muestra mensaje de error en la consola.
-            setError(error.message); // Establece el mensaje de error.
+            logger.error(`Error al iniciar sesión: ${error.message}`);
+            setError(error.message);
         }
     };
 
@@ -35,10 +35,14 @@ const LoginPage: React.FC = () =>
 
     return (
         <div className="auth-container">
-            <h2 className="auth-title">Iniciar Sesión</h2>
+            <h2 className="auth-title">
+                <FormattedMessage id="login.title" defaultMessage="Iniciar Sesión" />
+            </h2>
             <form className="auth-form" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
                 <div className="auth-form-group">
-                    <label htmlFor="email">Correo Electrónico</label>
+                    <label htmlFor="email">
+                        <FormattedMessage id="login.emailLabel" defaultMessage="Correo Electrónico" />
+                    </label>
                     <input
                         type="email"
                         id="email"
@@ -48,7 +52,9 @@ const LoginPage: React.FC = () =>
                     />
                 </div>
                 <div className="auth-form-group">
-                    <label htmlFor="password">Contraseña</label>
+                    <label htmlFor="password">
+                        <FormattedMessage id="login.passwordLabel" defaultMessage="Contraseña" />
+                    </label>
                     <input
                         type="password"
                         id="password"
@@ -58,12 +64,15 @@ const LoginPage: React.FC = () =>
                     />
                 </div>
                 <button type="submit" className="auth-button">
-                    Iniciar Sesión
+                    <FormattedMessage id="login.submitButton" defaultMessage="Iniciar Sesión" />
                 </button>
-                {error && <p className="error-message">{error}</p>} {/* Mensaje de error (condicional). */}
+                {error && <p className="error-message">{error}</p>}
             </form>
             <p className="auth-alt-text">
-                ¿No tienes una cuenta? <Link to="/register">Regístrate</Link>
+                <FormattedMessage id="login.noAccount" defaultMessage="¿No tienes una cuenta? " />
+                <Link to="/register">
+                    <FormattedMessage id="login.registerLink" defaultMessage="Regístrate" />
+                </Link>
             </p>
         </div>
     );

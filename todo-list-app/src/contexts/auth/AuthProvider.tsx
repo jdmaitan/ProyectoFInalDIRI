@@ -1,30 +1,16 @@
-import React, { createContext, useEffect, useState, ReactNode } from 'react';
-import { authService } from '../services/authService';
-import { Role } from '../services/interfaces/IAuthService';
-import logger from '../services/logging';
+import React, { useEffect, useState, ReactNode } from 'react';
+import { authService } from '../../services/authService';
+import { Role } from '../../services/interfaces/IAuthService';
+import logger from '../../services/logging';
+import { AuthContext } from './authContext';
 
-// Interfaz para las propiedades del contexto: usuario y roles.
-interface AuthContextProps
-{
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    user: any | null;
-    roles: Role[] | null;
-}
-
-// Crea el contexto de autenticación.
-export const AuthContext = createContext<AuthContextProps>({ user: null, roles: null });
-
-// Interfaz para las propiedades del proveedor: children.
 interface AuthProviderProps
 {
     children: ReactNode;
 }
 
-// Componente proveedor del contexto de autenticación.
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) =>
 {
-
-    // Estados para el usuario y roles.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [user, setUser] = useState<any | null>(null);
     const [roles, setRoles] = useState<Role[] | null>(null);
@@ -43,12 +29,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) =>
                 {
                     const userRoles = await authService.getUserRoles(currentUser); // Obtiene los roles.
                     setRoles(userRoles); // Establece los roles.
-                } catch (error)
+                } 
+                catch (error)
                 {
                     logger.error(`Error al obtener los roles: ${error}`);
                     setRoles(null); // Maneja el error.
                 }
-            } else
+            } 
+            else
             {
                 setRoles(null); // Limpia los roles si no hay usuario.
             }

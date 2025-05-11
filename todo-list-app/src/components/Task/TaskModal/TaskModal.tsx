@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TaskModal.css';
 import { Task } from '../../../interfaces/Task';
+import { useIntl, FormattedMessage } from 'react-intl';
 
 interface TaskModalProps
 {
@@ -14,7 +15,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ isTaskModalOpen: isOpen, onClose,
 {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [titleError, setTitleError] = useState<string | null>(null); // Estado para el error del título
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const intl = useIntl();
 
   useEffect(() =>
   {
@@ -34,7 +36,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isTaskModalOpen: isOpen, onClose,
   {
     if (title.trim() === '')
     {
-      setTitleError('El título es obligatorio.');
+      setTitleError(intl.formatMessage({ id: "taskModal.titleRequired", defaultMessage: "El título es obligatorio." }));
       return;
     }
 
@@ -54,29 +56,45 @@ const TaskModal: React.FC<TaskModalProps> = ({ isTaskModalOpen: isOpen, onClose,
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h2>{initialTask ? 'Editar Tarea' : 'Nueva Tarea'}</h2>
+        <h2>
+          {initialTask ? (
+            <FormattedMessage id="taskModal.editTitle" defaultMessage="Editar Tarea" />
+          ) : (
+            <FormattedMessage id="taskModal.newTitle" defaultMessage="Nueva Tarea" />
+          )}
+        </h2>
 
         <div className="modal-content">
-          <label>Título:</label>
+          <label htmlFor="task-title">
+            <FormattedMessage id="taskModal.titleLabel" defaultMessage="Título:" />
+          </label>
           <input
             type="text"
+            id="task-title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Título de la tarea"
+            placeholder={intl.formatMessage({ id: "taskModal.titlePlaceholder", defaultMessage: "Título de la tarea" })}
           />
           {titleError && <p className="error-message">{titleError}</p>}
 
-          <label>Descripción:</label>
+          <label htmlFor="task-description">
+            <FormattedMessage id="taskModal.descriptionLabel" defaultMessage="Descripción:" />
+          </label>
           <textarea
+            id="task-description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Descripción detallada"
+            placeholder={intl.formatMessage({ id: "taskModal.descriptionPlaceholder", defaultMessage: "Descripción detallada" })}
           />
         </div>
 
         <div className="modal-actions">
-          <button onClick={handleSave}>Guardar</button>
-          <button onClick={onClose}>Cancelar</button>
+          <button onClick={handleSave}>
+            <FormattedMessage id="taskModal.saveButton" defaultMessage="Guardar" />
+          </button>
+          <button onClick={onClose}>
+            <FormattedMessage id="taskModal.cancelButton" defaultMessage="Cancelar" />
+          </button>
         </div>
       </div>
     </div>

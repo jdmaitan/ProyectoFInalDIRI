@@ -1,6 +1,6 @@
-import React, { JSX, useContext } from 'react';
+import React, { JSX } from 'react';
 import { Navigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/authContext';
+import { useAuth } from '../contexts/auth/useAuth';
 
 interface ProtectedRouteProps
 {
@@ -9,7 +9,7 @@ interface ProtectedRouteProps
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) =>
 {
-    const { user } = useContext(AuthContext); // Obtiene el usuario del contexto.
+    const { user } = useAuth(); // Obtiene el usuario del contexto.
 
     // Redirige al usuario a la página de login si no está autenticado.
     if (!user)

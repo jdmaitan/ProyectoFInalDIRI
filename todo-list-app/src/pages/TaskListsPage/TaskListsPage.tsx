@@ -1,12 +1,13 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addTaskListAsync, updateTaskListAsync, deleteTaskListAsync, fetchTaskLists, } from '../../features/taskListsSlice';
+import { addTaskListAsync, updateTaskListAsync, deleteTaskListAsync, fetchTaskLists } from '../../features/taskListsSlice';
 import TaskListsContainer from '../../components/TaskList/TaskListContainer/TaskListContainer';
 import { TaskList } from '../../interfaces/TaskLists';
 import { AppDispatch, RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import logger from '../../services/logging';
 import './TaskListsPage.css';
+import { FormattedMessage } from 'react-intl';
 
 const TaskListModal = lazy(() => import('../../components/TaskList/TaskListModal/TaskListModal'));
 
@@ -36,8 +37,7 @@ const TaskListsPage: React.FC = () =>
         if (taskListData.id)
         {
             dispatch(updateTaskListAsync({ id: taskListData.id, title: taskListData.title, description: taskListData.description }));
-        }
-        else
+        } else
         {
             dispatch(addTaskListAsync({ title: taskListData.title, description: taskListData.description }));
         }
@@ -64,36 +64,36 @@ const TaskListsPage: React.FC = () =>
 
     useEffect(() =>
     {
-        dispatch(fetchTaskLists()); // Despachamos fetchTaskLists al montar el componente
+        dispatch(fetchTaskLists());
         logger.info("Entrando a TaskListsPage");
     }, [dispatch]);
 
     if (loading === 'pending')
     {
-        return <div>Cargando...</div>;
+        return <div><FormattedMessage id="taskLists.loading" defaultMessage="Cargando..." /></div>;
     }
 
     if (loading === 'failed')
     {
-        return <div>Error: {error || 'Hubo un error durante la ejecución de la operación'}</div>;
+        return <div><FormattedMessage id="taskLists.error" defaultMessage="Error: {error}" values={{ error: error || 'Hubo un error durante la ejecución de la operación' }} /></div>;
     }
 
     return (
         <div className="task-list-page">
-            <h1>Mis Listas de Tareas</h1>
+            <h1><FormattedMessage id="taskLists.title" defaultMessage="Mis Listas de Tareas" /></h1>
 
             <div className="task-list-header">
                 <button
                     className="add-task-list-button"
                     onClick={handleOpenAddTaskListModal}
                 >
-                    Añadir Nueva Lista
+                    <FormattedMessage id="taskLists.addTaskListButton" defaultMessage="Añadir Nueva Lista" />
                 </button>
-                {error && <p className="error-message">Error: {error}</p>}
+                {error && <p className="error-message"><FormattedMessage id="taskLists.errorMessage" defaultMessage="Error: {error}" values={{ error: error }} /></p>}
             </div>
 
             {isTaskListModalOpen && (
-                <Suspense fallback={<div>Cargando modal...</div>}> {/* Envolvemos el modal con Suspense */}
+                <Suspense fallback={<div><FormattedMessage id="taskLists.loadingModal" defaultMessage="Cargando modal..." /></div>}>
                     <TaskListModal
                         isOpen={isTaskListModalOpen}
                         onClose={handleCloseTaskListModal}

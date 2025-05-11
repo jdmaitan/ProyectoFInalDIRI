@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Task } from '../../interfaces/Task';
 import './TasksPage.css';
 import logger from '../../services/logging';
+import { FormattedMessage } from 'react-intl';
 
 const TaskModal = lazy(() => import('../../components/Task/TaskModal/TaskModal'));
 
@@ -16,7 +17,6 @@ const TasksPage: React.FC = () =>
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
-  // Obtener la lista específica y sus tareas
   const taskList = useSelector((state: RootState) =>
     state.taskLists.lists.find(list => list.id === taskListId!)
   );
@@ -104,32 +104,32 @@ const TasksPage: React.FC = () =>
 
   if (loading === 'pending')
   {
-    return <div>Cargando...</div>;
+    return <div><FormattedMessage id="tasksPage.loading" defaultMessage="Cargando..." /></div>;
   }
 
   if (loading === 'failed')
   {
-    return <div>Error: {error || 'Ocurrió un error al realizar la operación.'}</div>;
+    return <div><FormattedMessage id="tasksPage.error" defaultMessage="Error: {error}" values={{ error: error || 'Ocurrió un error al realizar la operación.' }} /></div>;
   }
 
   return (
     <div className="tasks-page">
-      <h1>{taskList?.title || 'Tareas'}</h1>
+      <h1>{taskList?.title || <FormattedMessage id="tasksPage.defaultTitle" defaultMessage="Tareas" />}</h1>
 
       <div className="tasks-controls">
         <button className="back-button" onClick={handleGoBack}>
-          Volver a Listas
+          <FormattedMessage id="tasksPage.goBack" defaultMessage="Volver a Listas" />
         </button>
         <button
           className="add-task-button"
           onClick={handleOpenAddTaskModal}
         >
-          Añadir Nueva Tarea
+          <FormattedMessage id="tasksPage.addTaskButton" defaultMessage="Añadir Nueva Tarea" />
         </button>
       </div>
 
       {isTaskModalOpen && (
-        <Suspense fallback={<div>Cargando modal...</div>}>
+        <Suspense fallback={<div><FormattedMessage id="tasksPage.loadingModal" defaultMessage="Cargando modal..." /></div>}>
           <TaskModal
             isTaskModalOpen={isTaskModalOpen}
             onClose={handleCloseTaskModal}
