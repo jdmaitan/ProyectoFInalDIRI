@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './TaskModal.css';
 import { Task } from '../../../interfaces/Task';
 import { useIntl, FormattedMessage } from 'react-intl';
 
@@ -54,9 +53,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ isTaskModalOpen: isOpen, onClose,
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white rounded-md shadow-xl p-6 w-full max-w-md">
+        <h2 className="text-xl font-semibold mb-4">
           {initialTask ? (
             <FormattedMessage id="taskModal.editTitle" defaultMessage="Editar Tarea" />
           ) : (
@@ -64,35 +63,45 @@ const TaskModal: React.FC<TaskModalProps> = ({ isTaskModalOpen: isOpen, onClose,
           )}
         </h2>
 
-        <div className="modal-content">
-          <label htmlFor="task-title">
+        <div className="mb-4">
+          <label htmlFor="task-title" className="block text-gray-700 text-sm font-bold mb-2">
             <FormattedMessage id="taskModal.titleLabel" defaultMessage="Título:" />
           </label>
           <input
             type="text"
             id="task-title"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder={intl.formatMessage({ id: "taskModal.titlePlaceholder", defaultMessage: "Título de la tarea" })}
           />
-          {titleError && <p className="error-message">{titleError}</p>}
+          {titleError && <p className="text-red-500 text-xs italic">{titleError}</p>}
+        </div>
 
-          <label htmlFor="task-description">
+        <div className="mb-6">
+          <label htmlFor="task-description" className="block text-gray-700 text-sm font-bold mb-2">
             <FormattedMessage id="taskModal.descriptionLabel" defaultMessage="Descripción:" />
           </label>
           <textarea
             id="task-description"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder={intl.formatMessage({ id: "taskModal.descriptionPlaceholder", defaultMessage: "Descripción detallada" })}
           />
         </div>
 
-        <div className="modal-actions">
-          <button onClick={handleSave}>
+        <div className="flex items-center justify-end">
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
+            onClick={handleSave}
+          >
             <FormattedMessage id="taskModal.saveButton" defaultMessage="Guardar" />
           </button>
-          <button onClick={onClose}>
+          <button
+            className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            onClick={onClose}
+          >
             <FormattedMessage id="taskModal.cancelButton" defaultMessage="Cancelar" />
           </button>
         </div>

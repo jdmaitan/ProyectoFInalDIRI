@@ -1,7 +1,6 @@
 import React from 'react';
 import TaskListItem from '../TaskListItem/TaskListItem';
 import { TaskList } from '../../../interfaces/TaskLists';
-import './TaskListContainer.css';
 
 interface TaskListsContainerProps {
   taskLists: TaskList[];
@@ -12,7 +11,7 @@ interface TaskListsContainerProps {
 
 const TaskListsContainer: React.FC<TaskListsContainerProps> = ({ taskLists, onEdit, onDelete, onSelect }) => {
   return (
-    <ul className="task-lists-container">
+    <ul className="mt-8 w-full max-w-2xl mx-auto space-y-4 list-none p-0">
       {taskLists.map((taskList) => (
         <TaskListItem
           key={taskList.id}

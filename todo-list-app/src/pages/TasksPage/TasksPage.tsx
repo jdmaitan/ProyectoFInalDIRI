@@ -5,14 +5,12 @@ import { AppDispatch, RootState } from '../../store';
 import TasksContainer from '../../components/Task/TasksContainer/TasksContainer';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Task } from '../../interfaces/Task';
-import './TasksPage.css';
 import logger from '../../services/logging';
 import { FormattedMessage } from 'react-intl';
 
 const TaskModal = lazy(() => import('../../components/Task/TaskModal/TaskModal'));
 
-const TasksPage: React.FC = () =>
-{
+const TasksPage: React.FC = () => {
   const { taskListId } = useParams<{ taskListId: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -26,22 +24,18 @@ const TasksPage: React.FC = () =>
   const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
-  const handleOpenAddTaskModal = () =>
-  {
+  const handleOpenAddTaskModal = () => {
     setTaskToEdit(null);
     setIsTaskModalOpen(true);
   };
 
-  const handleCloseTaskModal = () =>
-  {
+  const handleCloseTaskModal = () => {
     setIsTaskModalOpen(false);
     setTaskToEdit(null);
   };
 
-  const handleSaveTask = (taskData: { id?: string; title: string; description: string }) =>
-  {
-    if (taskData.id)
-    {
+  const handleSaveTask = (taskData: { id?: string; title: string; description: string }) => {
+    if (taskData.id) {
       dispatch(
         updateTaskAsync({
           listId: taskListId!,
@@ -50,8 +44,7 @@ const TasksPage: React.FC = () =>
           description: taskData.description,
         })
       );
-    } else
-    {
+    } else {
       dispatch(
         addTaskAsync({
           listId: taskListId!,
@@ -64,8 +57,7 @@ const TasksPage: React.FC = () =>
     setTaskToEdit(null);
   };
 
-  const handleCompletedToggle = (id: string, completed: boolean) =>
-  {
+  const handleCompletedToggle = (id: string, completed: boolean) => {
     dispatch(
       toggleTaskCompletionAsync({
         listId: taskListId!,
@@ -75,15 +67,13 @@ const TasksPage: React.FC = () =>
     );
   };
 
-  const handleOpenEditTaskModal = (id: string) =>
-  {
+  const handleOpenEditTaskModal = (id: string) => {
     const task = tasks.find(t => t.id === id);
     setTaskToEdit(task || null);
     setIsTaskModalOpen(true);
   };
 
-  const handleDeleteTask = (id: string) =>
-  {
+  const handleDeleteTask = (id: string) => {
     dispatch(
       deleteTaskAsync({
         listId: taskListId!,
@@ -92,44 +82,46 @@ const TasksPage: React.FC = () =>
     );
   };
 
-  const handleGoBack = () =>
-  {
+  const handleGoBack = () => {
     navigate('/taskLists');
   };
 
-  useEffect(() =>
-  {
+  useEffect(() => {
     logger.info("Entrando a TasksPage");
   }, []);
 
-  if (loading === 'pending')
-  {
-    return <div><FormattedMessage id="tasksPage.loading" defaultMessage="Cargando..." /></div>;
+  if (loading === 'pending') {
+    return <div className="p-4"><FormattedMessage id="tasksPage.loading" /></div>;
   }
 
-  if (loading === 'failed')
-  {
-    return <div><FormattedMessage id="tasksPage.error" defaultMessage="Error: {error}" values={{ error: error || 'Ocurrió un error al realizar la operación.' }} /></div>;
+  if (loading === 'failed') {
+    return <div className="p-4 text-red-500"><FormattedMessage id="tasksPage.error" values={{ error: error || 'Ocurrió un error al realizar la operación.' }} /></div>;
   }
 
   return (
-    <div className="tasks-page">
-      <h1>{taskList?.title || <FormattedMessage id="tasksPage.defaultTitle" defaultMessage="Tareas" />}</h1>
-
-      <div className="tasks-controls">
-        <button className="back-button" onClick={handleGoBack}>
-          <FormattedMessage id="tasksPage.goBack" defaultMessage="Volver a Listas" />
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="max-w-xl mx-auto mb-4 text-center">
+        <h1 className="text-3xl font-semibold text-gray-800">
+          {taskList?.title || <FormattedMessage id="tasksPage.defaultTitle" />}
+        </h1>
+      </div>
+      <div className="max-w-xl mx-auto flex justify-between mb-6">
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus-shadow-outline transition duration-150 ease-in-out"
+          onClick={handleGoBack}
+        >
+          <FormattedMessage id="tasksPage.goBack" />
         </button>
         <button
-          className="add-task-button"
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus-shadow-outline transition duration-150 ease-in-out"
           onClick={handleOpenAddTaskModal}
         >
-          <FormattedMessage id="tasksPage.addTaskButton" defaultMessage="Añadir Nueva Tarea" />
+          <FormattedMessage id="tasksPage.addTaskButton" />
         </button>
       </div>
 
       {isTaskModalOpen && (
-        <Suspense fallback={<div><FormattedMessage id="tasksPage.loadingModal" defaultMessage="Cargando modal..." /></div>}>
+        <Suspense fallback={<div className="p-4"><FormattedMessage id="tasksPage.loadingModal" /></div>}>
           <TaskModal
             isTaskModalOpen={isTaskModalOpen}
             onClose={handleCloseTaskModal}
@@ -139,12 +131,14 @@ const TasksPage: React.FC = () =>
         </Suspense>
       )}
 
-      <TasksContainer
-        tasks={tasks}
-        onToggle={handleCompletedToggle}
-        onEdit={handleOpenEditTaskModal}
-        onDelete={handleDeleteTask}
-      />
+      <div className="max-w-xl mx-auto">
+        <TasksContainer
+          tasks={tasks}
+          onToggle={handleCompletedToggle}
+          onEdit={handleOpenEditTaskModal}
+          onDelete={handleDeleteTask}
+        />
+      </div>
     </div>
   );
 };
